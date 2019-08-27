@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nil.ed.book.mapper.UserMapper">
+  <resultMap id="BaseResultMap" type="nil.ed.book.entity.User">
+    <result column="id" jdbcType="INTEGER" property="id" />
+    <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
+    <result column="role" jdbcType="INTEGER" property="role" />
+    <result column="password_md5" jdbcType="VARCHAR" property="passwordMd5" />
+    <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="last_update_time" jdbcType="BIGINT" property="lastUpdateTime" />
+  </resultMap>
+  <sql id="Blob_Column_List">
+    last_update_time
+  </sql>
+  <insert id="insert" parameterType="nil.ed.book.entity.User">
+    insert into t_user (id, nick_name, role, 
+      password_md5, create_time, last_update_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{nickName,jdbcType=VARCHAR}, #{role,jdbcType=INTEGER}, 
+      #{passwordMd5,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{lastUpdateTime,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="nil.ed.book.entity.User">
+    insert into t_user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="nickName != null">
+        nick_name,
+      </if>
+      <if test="role != null">
+        role,
+      </if>
+      <if test="passwordMd5 != null">
+        password_md5,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="lastUpdateTime != null">
+        last_update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="nickName != null">
+        #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="role != null">
+        #{role,jdbcType=INTEGER},
+      </if>
+      <if test="passwordMd5 != null">
+        #{passwordMd5,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="lastUpdateTime != null">
+        #{lastUpdateTime,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="listUsers" resultMap="BaseResultMap">
+    select * from `t_user`;
+  </select>
+
+  <select id="getUserById" resultMap="BaseResultMap">
+    select * from `t_user` where `t_user`.`id` = #{id}
+  </select>
+
+  <delete id="deleteUserById">
+    delete from `t_user` where `t_user`.`id` = #{id}
+  </delete>
+
+  <update id="updateUser">
+    update `t_user`
+    <set>
+      <if test="#{user.nick_name} != null">
+        `t_user`.`name` = #{user.name},
+      </if>
+      <if test="#{user.password_md5} != null">
+        `t_user`.`desc` = #{user.password_md5},
+      </if>
+      <if test="#{user.role} != null">
+        `t_user`.`role` = #{user.role}
+      </if>
+    </set>
+    <where>
+      `t_user`.`id` = #{user.id}
+    </where>
+  </update>
+</mapper>

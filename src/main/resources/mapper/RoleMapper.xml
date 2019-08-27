@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nil.ed.book.mapper.RoleMapper">
+  <resultMap id="BaseResultMap" type="nil.ed.book.entity.Role">
+    <result column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="desc" jdbcType="VARCHAR" property="desc" />
+    <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="creator" jdbcType="INTEGER" property="creator" />
+    <result column="last_update_time" jdbcType="BIGINT" property="lastUpdateTime" />
+  </resultMap>
+  <insert id="insert" parameterType="nil.ed.book.entity.Role">
+    insert into t_role (id, name, desc, 
+      create_time, creator, last_update_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=BIGINT}, #{creator,jdbcType=INTEGER}, #{lastUpdateTime,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="nil.ed.book.entity.Role">
+    insert into t_role
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="desc != null">
+        desc,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="creator != null">
+        creator,
+      </if>
+      <if test="lastUpdateTime != null">
+        last_update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="desc != null">
+        #{desc,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="creator != null">
+        #{creator,jdbcType=INTEGER},
+      </if>
+      <if test="lastUpdateTime != null">
+        #{lastUpdateTime,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="listRoles" resultMap="BaseResultMap">
+    select * from `t_role`;
+  </select>
+
+  <select id="getRoleById" resultMap="BaseResultMap">
+    select * from `t_role` where `t_role`.`id` = #{id}
+  </select>
+
+  <delete id="deleteRoleById">
+    delete from `t_role` where `t_role`.`id` = #{id}
+  </delete>
+
+  <update id="updateRole">
+    update `t_role`
+    <set>
+      <if test="#{role.name} != null">
+        `t_role`.`name` = #{role.name},
+      </if>
+        <if test="#{role.desc} != null">
+          `t_role`.`desc` = #{role.desc}
+        </if>
+    </set>
+    <where>
+      `t_role`.`id` = #{role.id}
+    </where>
+  </update>
+</mapper>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nil.ed.book.mapper.ResourceMapper">
+  <resultMap id="BaseResultMap" type="nil.ed.book.entity.Resource">
+    <result column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="uri" jdbcType="VARCHAR" property="uri" />
+    <result column="del_mark" jdbcType="TINYINT" property="delMark" />
+    <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="creator" jdbcType="INTEGER" property="creator" />
+    <result column="last_update_time" jdbcType="BIGINT" property="lastUpdateTime" />
+  </resultMap>
+  <insert id="insert" parameterType="nil.ed.book.entity.Resource">
+    insert into t_resource (id, name, uri, 
+      del_mark, create_time, creator, 
+      last_update_time)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{uri,jdbcType=VARCHAR}, 
+      #{delMark,jdbcType=TINYINT}, #{createTime,jdbcType=BIGINT}, #{creator,jdbcType=INTEGER}, 
+      #{lastUpdateTime,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="nil.ed.book.entity.Resource">
+    insert into t_resource
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="uri != null">
+        uri,
+      </if>
+      <if test="delMark != null">
+        del_mark,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="creator != null">
+        creator,
+      </if>
+      <if test="lastUpdateTime != null">
+        last_update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="uri != null">
+        #{uri,jdbcType=VARCHAR},
+      </if>
+      <if test="delMark != null">
+        #{delMark,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="creator != null">
+        #{creator,jdbcType=INTEGER},
+      </if>
+      <if test="lastUpdateTime != null">
+        #{lastUpdateTime,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="listAllResources" resultMap="BaseResultMap">
+    select * from `t_resource`
+  </select>
+
+  <select id="getResourceById" resultMap="BaseResultMap">
+    select * from `t_resource` where `t_resource`.id = #{id}
+  </select>
+
+  <delete id="deleteResourceById">
+    delete from `t_resource` where `t_resource`.id = #{id}
+  </delete>
+
+  <update id="updateResource">
+    update `t_resource`
+    <set>
+      <if test="#{resource.name} != null">
+        `t_resource`.`name` = #{resource.name},
+      </if>
+      <if test="#{resource.uri} != null">
+        `t_resource`.`uri` = #{resource.uri}
+      </if>
+    </set>
+    <where>
+      `t_resource`.`id` = #{resource.id}
+    </where>
+  </update>
+</mapper>
