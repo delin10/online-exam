@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nil.ed.onlineexam.mapper.TestPaperContentItemMapper">
+  <resultMap id="BaseResultMap" type="nil.ed.onlineexam.entity.TestPaperContentItem">
+    <result column="id" jdbcType="INTEGER" property="id" />
+    <result column="pid" jdbcType="INTEGER" property="pid" />
+    <result column="qid" jdbcType="INTEGER" property="qid" />
+    <result column="first_seq" jdbcType="INTEGER" property="firstSeq" />
+    <result column="sec_seq" jdbcType="INTEGER" property="secSeq" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="update_time" jdbcType="BIGINT" property="updateTime" />
+  </resultMap>
+  <insert id="insert" parameterType="nil.ed.onlineexam.entity.TestPaperContentItem">
+    insert into t_test_paper_content_item (id, pid, qid, 
+      first_seq, sec_seq, score, 
+      create_time, update_time)
+    values (#{id,jdbcType=INTEGER}, #{pid,jdbcType=INTEGER}, #{qid,jdbcType=INTEGER}, 
+      #{firstSeq,jdbcType=INTEGER}, #{secSeq,jdbcType=INTEGER}, #{score,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="nil.ed.onlineexam.entity.TestPaperContentItem">
+    insert into t_test_paper_content_item
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="pid != null">
+        pid,
+      </if>
+      <if test="qid != null">
+        qid,
+      </if>
+      <if test="firstSeq != null">
+        first_seq,
+      </if>
+      <if test="secSeq != null">
+        sec_seq,
+      </if>
+      <if test="score != null">
+        score,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="pid != null">
+        #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="qid != null">
+        #{qid,jdbcType=INTEGER},
+      </if>
+      <if test="firstSeq != null">
+        #{firstSeq,jdbcType=INTEGER},
+      </if>
+      <if test="secSeq != null">
+        #{secSeq,jdbcType=INTEGER},
+      </if>
+      <if test="score != null">
+        #{score,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <resultMap id="BaseResultMap" type="nil.ed.onlineexam.entity.TestPaperContentItem">
+    <result column="id" jdbcType="INTEGER" property="id" />
+    <result column="pid" jdbcType="INTEGER" property="pid" />
+    <result column="qid" jdbcType="INTEGER" property="qid" />
+    <result column="first_seq" jdbcType="INTEGER" property="firstSeq" />
+    <result column="sec_seq" jdbcType="INTEGER" property="secSeq" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="update_time" jdbcType="BIGINT" property="updateTime" />
+  </resultMap>
+  <insert id="insert" parameterType="nil.ed.onlineexam.entity.TestPaperContentItem">
+    insert into t_test_paper_content_item (id, pid, qid, 
+      first_seq, sec_seq, score, 
+      create_time, update_time)
+    values (#{id,jdbcType=INTEGER}, #{pid,jdbcType=INTEGER}, #{qid,jdbcType=INTEGER}, 
+      #{firstSeq,jdbcType=INTEGER}, #{secSeq,jdbcType=INTEGER}, #{score,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="nil.ed.onlineexam.entity.TestPaperContentItem">
+    insert into t_test_paper_content_item
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="pid != null">
+        pid,
+      </if>
+      <if test="qid != null">
+        qid,
+      </if>
+      <if test="firstSeq != null">
+        first_seq,
+      </if>
+      <if test="secSeq != null">
+        sec_seq,
+      </if>
+      <if test="score != null">
+        score,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="pid != null">
+        #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="qid != null">
+        #{qid,jdbcType=INTEGER},
+      </if>
+      <if test="firstSeq != null">
+        #{firstSeq,jdbcType=INTEGER},
+      </if>
+      <if test="secSeq != null">
+        #{secSeq,jdbcType=INTEGER},
+      </if>
+      <if test="score != null">
+        #{score,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+</mapper>

@@ -1,3 +1,3 @@
-mysqldump -u root -plw14757473dlxl book > "book.backup.sql"
+mysqldump -u root -plw14757473dlxl onlineexamdb > "onlineexamdb.backup.sql"
 
-mysql -uroot -plw14757473dlxl < book.sql
+mysql -uroot -plw14757473dlxl < onlineexam.sql

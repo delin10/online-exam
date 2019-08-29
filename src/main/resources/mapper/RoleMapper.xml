@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="nil.ed.book.mapper.RoleMapper">
-  <resultMap id="BaseResultMap" type="nil.ed.book.entity.Role">
+<mapper namespace="nil.ed.onlineexam.mapper.RoleMapper">
+  <resultMap id="BaseResultMap" type="nil.ed.onlineexam.entity.Role">
     <result column="id" jdbcType="INTEGER" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="desc" jdbcType="VARCHAR" property="desc" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
-    <result column="creator" jdbcType="INTEGER" property="creator" />
     <result column="last_update_time" jdbcType="BIGINT" property="lastUpdateTime" />
+    <result column="creator" jdbcType="INTEGER" property="creator" />
   </resultMap>
-  <insert id="insert" parameterType="nil.ed.book.entity.Role">
+  <insert id="insert" parameterType="nil.ed.onlineexam.entity.Role">
     insert into t_role (id, name, desc, 
-      create_time, creator, last_update_time
+      create_time, last_update_time, creator
       )
     values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=BIGINT}, #{creator,jdbcType=INTEGER}, #{lastUpdateTime,jdbcType=BIGINT}
+      #{createTime,jdbcType=BIGINT}, #{lastUpdateTime,jdbcType=BIGINT}, #{creator,jdbcType=INTEGER}
       )
   </insert>
-  <insert id="insertSelective" parameterType="nil.ed.book.entity.Role">
+  <insert id="insertSelective" parameterType="nil.ed.onlineexam.entity.Role">
     insert into t_role
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -32,11 +32,11 @@
       <if test="createTime != null">
         create_time,
       </if>
-      <if test="creator != null">
-        creator,
-      </if>
       <if test="lastUpdateTime != null">
         last_update_time,
+      </if>
+      <if test="creator != null">
+        creator,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -52,15 +52,14 @@
       <if test="createTime != null">
         #{createTime,jdbcType=BIGINT},
       </if>
-      <if test="creator != null">
-        #{creator,jdbcType=INTEGER},
-      </if>
       <if test="lastUpdateTime != null">
         #{lastUpdateTime,jdbcType=BIGINT},
       </if>
+      <if test="creator != null">
+        #{creator,jdbcType=INTEGER},
+      </if>
     </trim>
   </insert>
-
   <select id="listRoles" resultMap="BaseResultMap">
     select * from `t_role`;
   </select>
@@ -79,12 +78,20 @@
       <if test="#{role.name} != null">
         `t_role`.`name` = #{role.name},
       </if>
-        <if test="#{role.desc} != null">
-          `t_role`.`desc` = #{role.desc}
-        </if>
+      <if test="#{role.desc} != null">
+        `t_role`.`desc` = #{role.desc}
+      </if>
     </set>
     <where>
       `t_role`.`id` = #{role.id}
     </where>
   </update>
+
+  <select id="listPermissionsOfRole" resultMap="nil.ed.onlineexam.mapper.PermissionMapper.BaseResultMap">
+    select `trs`.*
+    from `t_role` tr
+    left join `t_role_resource` trr on `tr`.`id` = `trr`.`role_id`
+    left join `t_resource` trs on `trs`.`id` = `trr`.`resource_id`
+    where `tr`.`id` = #{id};
+  </select>
 </mapper>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="nil.ed.book.mapper.UserMapper">
-  <resultMap id="BaseResultMap" type="nil.ed.book.entity.User">
+<mapper namespace="nil.ed.onlineexam.mapper.UserMapper">
+  <resultMap id="BaseResultMap" type="nil.ed.onlineexam.entity.User">
     <result column="id" jdbcType="INTEGER" property="id" />
     <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
     <result column="role" jdbcType="INTEGER" property="role" />
@@ -9,10 +9,8 @@
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
     <result column="last_update_time" jdbcType="BIGINT" property="lastUpdateTime" />
   </resultMap>
-  <sql id="Blob_Column_List">
-    last_update_time
-  </sql>
-  <insert id="insert" parameterType="nil.ed.book.entity.User">
+  
+  <insert id="insert" parameterType="nil.ed.onlineexam.entity.User">
     insert into t_user (id, nick_name, role, 
       password_md5, create_time, last_update_time
       )
@@ -20,7 +18,7 @@
       #{passwordMd5,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{lastUpdateTime,jdbcType=BIGINT}
       )
   </insert>
-  <insert id="insertSelective" parameterType="nil.ed.book.entity.User">
+  <insert id="insertSelective" parameterType="nil.ed.onlineexam.entity.User">
     insert into t_user
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -63,6 +61,7 @@
       </if>
     </trim>
   </insert>
+  
   <select id="listUsers" resultMap="BaseResultMap">
     select * from `t_user`;
   </select>
