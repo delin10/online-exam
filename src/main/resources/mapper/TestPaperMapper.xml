@@ -23,8 +23,7 @@
     `test_duration`,
     `score`,
     `creator`,
-    `create_time`,
-    `published`)
+    `create_time`)
     values(#{id,jdbcType=INTEGER},
     #{cid,jdbcType=INTEGER},
     #{name,jdbcType=VARCHAR},
@@ -33,8 +32,7 @@
     #{testDuration,jdbcType=INTEGER},
     #{score,jdbcType=INTEGER},
     #{creator,jdbcType=INTEGER},
-    #{createTime,jdbcType=BIGINT},
-    #{published,jdbcType=TINYINT})
+    #{createTime,jdbcType=BIGINT})
   </insert>
 
 

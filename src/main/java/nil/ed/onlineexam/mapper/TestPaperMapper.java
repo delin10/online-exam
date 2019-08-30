@@ -8,9 +8,6 @@ import java.util.List;
 public interface TestPaperMapper {
     int insert(TestPaper record);
 
-    int insertSelective(TestPaper record);
-
-
     List<TestPaper> listTestPapers();
 
     TestPaper getTestPaperById(@Param("id") Integer id);

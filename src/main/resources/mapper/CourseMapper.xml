@@ -57,4 +57,24 @@
       `t_course`.`id` = #{course.id}
     </where>
   </update>
+
+  <insert id="joinCourse">
+    insert into
+    `t_joined_course`(`id`,
+    `uid`,
+    `cid`,
+    `score`,
+    `join_test_time`,
+    `create_time`,
+    `update_time`)
+    values(#{joinedCourse.id},
+    #{joinedCourse.id},
+    #{joinedCourse.id},
+    #{joinedCourse.id},
+    #{joinedCourse.id},
+    #{joinedCourse.id},
+    #{joinedCourse.id})
+
+
+  </insert>
 </mapper>

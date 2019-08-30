@@ -9,6 +9,19 @@
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
     <result column="last_update_time" jdbcType="BIGINT" property="lastUpdateTime" />
   </resultMap>
+  <resultMap id="UserVOResultMap" type="nil.ed.onlineexam.vo.UserVO">
+    <result column="id" jdbcType="INTEGER" property="id" />
+    <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
+    <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <association property="role" javaType="nil.ed.onlineexam.entity.Role">
+      <result column="role_id" jdbcType="INTEGER" property="id" />
+      <result column="role_name" jdbcType="VARCHAR" property="name" />
+      <result column="role_desc" jdbcType="VARCHAR" property="desc" />
+      <result column="role_create_time" jdbcType="BIGINT" property="createTime" />
+      <result column="role_last_update_time" jdbcType="BIGINT" property="lastUpdateTime" />
+      <result column="role_creator" jdbcType="INTEGER" property="creator" />
+    </association>
+  </resultMap>
   
   <insert id="insert" parameterType="nil.ed.onlineexam.entity.User">
     insert into t_user (id, nick_name, role, 
@@ -90,5 +103,28 @@
     <where>
       `t_user`.`id` = #{user.id}
     </where>
+  </update>
+
+  <select id="getUserVO" resultMap="UserVOResultMap">
+    select `t_user`.`id`,
+    `t_user`.`nick_name`,
+    `t_user`.`create_time`,
+    `t_role`.`id` as `role_id`,
+    `t_role`.`name` as `role_name`,
+    `t_role`.`desc` as `role_desc`,
+    from `t_user`
+    left join `t_role` on `t_role`.`id` = `t_user`.role
+    where `t_user`.id = #{id}
+  </select>
+  
+  <update id="updateRoleOfUser">
+    update `t_user`
+    set `role` = #{roleId}, `update_time` = unix_timestamp(now(3)) * 1000
+    where `id` = #{id}
+  </update>
+  <update id="updatePasswordOfUser">
+    update `t_user`
+    set `pwd_md5` = #{newPwd}, `update_time` = unix_timestamp(now(3)) * 1000
+    where `id` = #{id}
   </update>
 </mapper>

@@ -8,7 +8,13 @@ import java.util.List;
 public interface QuestionMapper {
     int insert(Question record);
 
-    List<Question> listQuestions();
+    List<Question> listQuestions(Integer pageStart, Integer pageSize);
+
+    Integer countQuestions();
+
+    List<Question> listQuestionsByCreator(Integer creator, Integer pageStart, Integer pageSize);
+
+    Integer countQuestionsByCreator(Integer creator);
 
     Question getQuestionById(@Param("id") Integer id);
 
