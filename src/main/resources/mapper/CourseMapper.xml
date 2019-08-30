@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nil.ed.onlineexam.mapper.CourseMapper">
+  <resultMap id="BaseResultMap" type="nil.ed.onlineexam.entity.Course">
+    <result column="id" jdbcType="INTEGER" property="id" />
+    <result column="content" jdbcType="VARCHAR" property="name" />
+    <result column="teacher" jdbcType="INTEGER" property="teacher" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="update_time" jdbcType="BIGINT" property="updateTime" />    <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="start_time" jdbcType="BIGINT" property="startTime" />    <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="end_time" jdbcType="BIGINT" property="endTime" />
+  </resultMap>
+
+  <insert id="insert" parameterType="nil.ed.onlineexam.entity.Course">
+    insert into 
+    `t_course`(`id`,
+    `name`,
+    `teacher`,
+    `create_time`,
+    `update_time`,
+    `start_time`,
+    `end_time`,
+    `status`)
+    values(#{course.id},
+    #{course.name},
+    #{course.teacher},
+    #{course.createTime},
+    #{course.updateTime},
+    #{course.startTime},
+    #{course.endTime},
+    #{course.status})
+  </insert>
+
+  <select id="listCourses" resultMap="BaseResultMap">
+    select * from `t_course`;
+  </select>
+
+  <select id="getCourseById" resultMap="BaseResultMap">
+    select * from `t_course` where `t_course`.`id` = #{id}
+  </select>
+
+  <delete id="deleteCourseById">
+    delete from `t_course` where `t_course`.`id` = #{id}
+  </delete>
+
+  <update id="updateCourse" parameterType="nil.ed.onlineexam.entity.Course">
+    update `t_course`
+    <set>
+      <if test="#{course.name} != null">
+        `t_course`.`name` = #{course.name},
+      </if>
+      `t_course`.`update_time` = #{course.updateTime},
+      `t_course`.`status` = #{course.status}
+    </set>
+    <where>
+      `t_course`.`id` = #{course.id}
+    </where>
+  </update>
+</mapper>

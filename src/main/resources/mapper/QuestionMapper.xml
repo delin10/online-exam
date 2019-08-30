@@ -13,156 +13,60 @@
     <result column="update_time" jdbcType="BIGINT" property="updateTime" />
   </resultMap>
   <insert id="insert" parameterType="nil.ed.onlineexam.entity.Question">
-    insert into t_question (id, type, content, 
-      options, answer, creator, 
-      updater, create_time, update_time
-      )
-    values (#{id,jdbcType=INTEGER}, #{type,jdbcType=TINYINT}, #{content,jdbcType=VARCHAR}, 
-      #{options,jdbcType=VARCHAR}, #{answer,jdbcType=VARCHAR}, #{creator,jdbcType=INTEGER}, 
-      #{updater,jdbcType=INTEGER}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}
-      )
+    insert into
+    `t_question` (`id`,
+    `type`,
+    `content`,
+    `options`,
+    `answer`,
+    `creator`,
+    `updater`,
+    `create_time`,
+    `update_time`)
+    values (
+    #{id,jdbcType=INTEGER},
+    #{type,jdbcType=TINYINT},
+    #{content,jdbcType=VARCHAR},
+    #{options,jdbcType=VARCHAR},
+    #{answer,jdbcType=VARCHAR},
+    #{creator,jdbcType=INTEGER},
+    #{updater,jdbcType=INTEGER},
+    #{createTime,jdbcType=BIGINT},
+    #{updateTime,jdbcType=BIGINT})
   </insert>
-  <insert id="insertSelective" parameterType="nil.ed.onlineexam.entity.Question">
-    insert into t_question
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
+
+  <select id="listQuestions" resultMap="BaseResultMap">
+    select * from `t_question`;
+  </select>
+
+  <select id="getQuestionById" resultMap="BaseResultMap">
+    select * from `t_question` where `t_question`.`id` = #{id}
+  </select>
+
+  <delete id="deleteQuestionById">
+    delete from `t_question` where `t_question`.`id` = #{id}
+  </delete>
+
+  <update id="updateQuestion" parameterType="nil.ed.onlineexam.entity.Question">
+    update `t_question`
+    <set>
+      <if test="#{question.content} != null">
+        `t_question`.`content` = #{question.content},
       </if>
-      <if test="type != null">
-        type,
+      <if test="#{question.answer} != null">
+        `t_question`.`answer` = #{question.answer},
       </if>
-      <if test="content != null">
-        content,
+      <if test="#{question.options} != null">
+        `t_question`.`options` = #{question.options},
       </if>
-      <if test="options != null">
-        options,
+      <if test="#{question.type} != null">
+        `t_question`.`type` = #{question.type},
       </if>
-      <if test="answer != null">
-        answer,
-      </if>
-      <if test="creator != null">
-        creator,
-      </if>
-      <if test="updater != null">
-        updater,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="updateTime != null">
-        update_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="type != null">
-        #{type,jdbcType=TINYINT},
-      </if>
-      <if test="content != null">
-        #{content,jdbcType=VARCHAR},
-      </if>
-      <if test="options != null">
-        #{options,jdbcType=VARCHAR},
-      </if>
-      <if test="answer != null">
-        #{answer,jdbcType=VARCHAR},
-      </if>
-      <if test="creator != null">
-        #{creator,jdbcType=INTEGER},
-      </if>
-      <if test="updater != null">
-        #{updater,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=BIGINT},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=BIGINT},
-      </if>
-    </trim>
-  </insert>
-  <resultMap id="BaseResultMap" type="nil.ed.onlineexam.entity.Question">
-    <result column="id" jdbcType="INTEGER" property="id" />
-    <result column="type" jdbcType="TINYINT" property="type" />
-    <result column="content" jdbcType="VARCHAR" property="content" />
-    <result column="options" jdbcType="VARCHAR" property="options" />
-    <result column="answer" jdbcType="VARCHAR" property="answer" />
-    <result column="creator" jdbcType="INTEGER" property="creator" />
-    <result column="updater" jdbcType="INTEGER" property="updater" />
-    <result column="create_time" jdbcType="BIGINT" property="createTime" />
-    <result column="update_time" jdbcType="BIGINT" property="updateTime" />
-  </resultMap>
-  <insert id="insert" parameterType="nil.ed.onlineexam.entity.Question">
-    insert into t_question (id, type, content, 
-      options, answer, creator, 
-      updater, create_time, update_time
-      )
-    values (#{id,jdbcType=INTEGER}, #{type,jdbcType=TINYINT}, #{content,jdbcType=VARCHAR}, 
-      #{options,jdbcType=VARCHAR}, #{answer,jdbcType=VARCHAR}, #{creator,jdbcType=INTEGER}, 
-      #{updater,jdbcType=INTEGER}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}
-      )
-  </insert>
-  <insert id="insertSelective" parameterType="nil.ed.onlineexam.entity.Question">
-    insert into t_question
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="type != null">
-        type,
-      </if>
-      <if test="content != null">
-        content,
-      </if>
-      <if test="options != null">
-        options,
-      </if>
-      <if test="answer != null">
-        answer,
-      </if>
-      <if test="creator != null">
-        creator,
-      </if>
-      <if test="updater != null">
-        updater,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="updateTime != null">
-        update_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="type != null">
-        #{type,jdbcType=TINYINT},
-      </if>
-      <if test="content != null">
-        #{content,jdbcType=VARCHAR},
-      </if>
-      <if test="options != null">
-        #{options,jdbcType=VARCHAR},
-      </if>
-      <if test="answer != null">
-        #{answer,jdbcType=VARCHAR},
-      </if>
-      <if test="creator != null">
-        #{creator,jdbcType=INTEGER},
-      </if>
-      <if test="updater != null">
-        #{updater,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=BIGINT},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=BIGINT},
-      </if>
-    </trim>
-  </insert>
+      `t_question`.`update_time` = #{question.updateTime},
+      `t_question`.`updater` = #{question.updater}
+    </set>
+    <where>
+      `t_question`.`id` = #{question.id}
+    </where>
+  </update>
 </mapper>

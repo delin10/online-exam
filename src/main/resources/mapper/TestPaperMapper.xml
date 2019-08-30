@@ -14,80 +14,31 @@
     <result column="published" jdbcType="TINYINT" property="published" />
   </resultMap>
   <insert id="insert" parameterType="nil.ed.onlineexam.entity.TestPaper">
-    insert into t_test_paper (id, cid, name, 
-      start_time, end_time, test_duration, 
-      score, creator, create_time, 
-      published)
-    values (#{id,jdbcType=INTEGER}, #{cid,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
-      #{startTime,jdbcType=BIGINT}, #{endTime,jdbcType=BIGINT}, #{testDuration,jdbcType=INTEGER}, 
-      #{score,jdbcType=INTEGER}, #{creator,jdbcType=INTEGER}, #{createTime,jdbcType=BIGINT}, 
-      #{published,jdbcType=TINYINT})
+    insert into
+    `t_test_paper` (`id`,
+    `cid`,
+    `name`,
+    `start_time`,
+    `end_time`,
+    `test_duration`,
+    `score`,
+    `creator`,
+    `create_time`,
+    `published`)
+    values(#{id,jdbcType=INTEGER},
+    #{cid,jdbcType=INTEGER},
+    #{name,jdbcType=VARCHAR},
+    #{startTime,jdbcType=BIGINT},
+    #{endTime,jdbcType=BIGINT},
+    #{testDuration,jdbcType=INTEGER},
+    #{score,jdbcType=INTEGER},
+    #{creator,jdbcType=INTEGER},
+    #{createTime,jdbcType=BIGINT},
+    #{published,jdbcType=TINYINT})
   </insert>
-  <insert id="insertSelective" parameterType="nil.ed.onlineexam.entity.TestPaper">
-    insert into t_test_paper
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="cid != null">
-        cid,
-      </if>
-      <if test="name != null">
-        name,
-      </if>
-      <if test="startTime != null">
-        start_time,
-      </if>
-      <if test="endTime != null">
-        end_time,
-      </if>
-      <if test="testDuration != null">
-        test_duration,
-      </if>
-      <if test="score != null">
-        score,
-      </if>
-      <if test="creator != null">
-        creator,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="published != null">
-        published,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="cid != null">
-        #{cid,jdbcType=INTEGER},
-      </if>
-      <if test="name != null">
-        #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="startTime != null">
-        #{startTime,jdbcType=BIGINT},
-      </if>
-      <if test="endTime != null">
-        #{endTime,jdbcType=BIGINT},
-      </if>
-      <if test="testDuration != null">
-        #{testDuration,jdbcType=INTEGER},
-      </if>
-      <if test="score != null">
-        #{score,jdbcType=INTEGER},
-      </if>
-      <if test="creator != null">
-        #{creator,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=BIGINT},
-      </if>
-      <if test="published != null">
-        #{published,jdbcType=TINYINT},
-      </if>
-    </trim>
-  </insert>
+
+
+  <delete id="deleteTestPaperById">
+    delete from `t_test_paper` where `t_test_paper`.`id` = #{id}
+  </delete>
 </mapper>
