@@ -12,7 +12,9 @@ public interface RoleMapper {
     int insertSelective(Role record);
 
 
-    List<Role> listRoles();
+    List<Role> listRoles(Integer pageNo, Integer pageSize);
+
+    Integer countRoles();
 
     Role getRoleById(@Param("id") Integer id);
 
