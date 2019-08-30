@@ -1,6 +1,7 @@
 package nil.ed.onlineexam.vo;
 
 import lombok.Data;
+import nil.ed.onlineexam.entity.Role;
 
 @Data
 public class UserVO {
@@ -8,14 +9,7 @@ public class UserVO {
 
     private String nickName;
 
-    private Integer role;
+    private Role role;
 
     private Long createTime;
-
-    private Integer roleId;
-
-    private String name;
-
-    private String desc;
-
 }
