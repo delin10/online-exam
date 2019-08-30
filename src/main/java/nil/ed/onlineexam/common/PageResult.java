@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class PageWrapper<T> {
+public class PageResult<T> {
     /*
     page No
      */
