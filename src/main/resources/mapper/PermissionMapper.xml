@@ -94,4 +94,12 @@
       `t_resource`.`id` = #{permission.id}
     </where>
   </update>
+
+  <select id="listPermissionsOfRole" resultMap="nil.ed.onlineexam.mapper.PermissionMapper.BaseResultMap">
+    select `trs`.*
+    from `t_role` tr
+    left join `t_role_resource` trr on `tr`.`id` = `trr`.`role_id`
+    left join `t_resource` trs on `trs`.`id` = `trr`.`resource_id`
+    where `tr`.`id` = #{id};
+  </select>
 </mapper>

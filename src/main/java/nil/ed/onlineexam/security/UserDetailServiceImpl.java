@@ -42,7 +42,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
             if (user != null){
                 // 获取并且映射权限列表
-                List<Permission> permissionLS = roleMapper.listPermissionsOfRole(user.getRole());
+                List<Permission> permissionLS = permissionMapper.listPermissionsOfRole(user.getRole());
 
                 return new org.springframework.security.core.userdetails.User(String.valueOf(user.getId()),
                         user.getPasswordMd5(), Collections.singletonList(new SimpleGrantedAuthority(String.valueOf(user.getRole()))));

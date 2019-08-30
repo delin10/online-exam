@@ -16,6 +16,6 @@ public class RoleService {
     private PermissionMapper permissionMapper;
 
     public List<Permission> listPermissionOfRole(Integer roleId){
-        return roleMapper.listPermissionsOfRole(roleId);
+        return permissionMapper.listPermissionsOfRole(roleId);
     }
 }

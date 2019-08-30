@@ -17,4 +17,6 @@ public interface PermissionMapper {
     int deleteResourceById(@Param("id") Integer id);
 
     int updateResource(@Param("permission") Permission permission);
+
+    List<Permission> listPermissionsOfRole(@Param("roleId") Integer roleId);
 }
