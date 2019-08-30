@@ -36,7 +36,23 @@
   </insert>
 
   <select id="listQuestions" resultMap="BaseResultMap">
-    select * from `t_question`;
+    select * from `t_question`
+    limit #{pageStart},#{pageSize};
+  </select>
+
+  <select id="countQuestions" resultType="java.lang.Integer">
+    select count(*) from `t_question`;
+  </select>
+
+  <select id="listQuestionsByCreator" resultMap="BaseResultMap">
+    select * from `t_question`
+    where `t_question`.`creator` = #{creator}
+    limit #{pageStart},#{pageSize};
+  </select>
+
+  <select id="countQuestionsByCreator" resultType="java.lang.Integer">
+    select count(*) from `t_question`
+    where `t_question`.`creator` = #{creator};
   </select>
 
   <select id="getQuestionById" resultMap="BaseResultMap">
