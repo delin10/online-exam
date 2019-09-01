@@ -23,9 +23,9 @@
     </association>
   </resultMap>
   
-  <insert id="insert" parameterType="nil.ed.onlineexam.entity.User">
+  <insert id="insert" parameterType="nil.ed.onlineexam.entity.User" useGeneratedKeys="true">
     insert into t_user (id, nick_name, role, 
-      password_md5, create_time, last_update_time
+      password_md5, create_time, update_time
       )
     values (#{id,jdbcType=INTEGER}, #{nickName,jdbcType=VARCHAR}, #{role,jdbcType=INTEGER}, 
       #{passwordMd5,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{lastUpdateTime,jdbcType=BIGINT}

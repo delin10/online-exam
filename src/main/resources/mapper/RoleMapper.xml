@@ -9,10 +9,9 @@
     <result column="last_update_time" jdbcType="BIGINT" property="lastUpdateTime" />
     <result column="creator" jdbcType="INTEGER" property="creator" />
   </resultMap>
-  <insert id="insert" parameterType="nil.ed.onlineexam.entity.Role">
-    insert into t_role (id, name, desc, 
-      create_time, last_update_time, creator
-      )
+  <insert id="insert" parameterType="nil.ed.onlineexam.entity.Role" useGeneratedKeys="true">
+    insert into t_role (`id`, `name`, `desc`,
+      `create_time`, `update_time`, `creator`)
     values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}, 
       #{createTime,jdbcType=BIGINT}, #{lastUpdateTime,jdbcType=BIGINT}, #{creator,jdbcType=INTEGER}
       )
