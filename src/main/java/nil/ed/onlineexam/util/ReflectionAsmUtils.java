@@ -1,5 +1,6 @@
 package nil.ed.onlineexam.util;
 
+import com.alibaba.fastjson.JSONObject;
 import com.esotericsoftware.reflectasm.MethodAccess;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +47,16 @@ public class ReflectionAsmUtils {
                     toMethodAccess.invoke(to, "set" + StringUtils.capitalize(toPropertyName), value);
                 }
             } catch (Exception e) {/*ignore*/}
+        }
+    }
+
+    public static <T> void copyProperties(JSONObject from, T to) {
+        MethodAccess toMethodAccess = get(to.getClass());
+        Field[] toDeclaredFields = to.getClass().getDeclaredFields();
+        for (Field field : toDeclaredFields) {
+            String name = field.getName();
+            String setterName = "set"+StringUtils.capitalize(name);
+            toMethodAccess.invoke(to, setterName, from.getOrDefault(name, null));
         }
     }
 }
