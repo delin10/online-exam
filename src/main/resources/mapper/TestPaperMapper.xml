@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="nil.ed.onlineexam.mapper.TestPaperMapper">
   <resultMap id="BaseResultMap" type="nil.ed.onlineexam.entity.TestPaper">
-    <result column="id" jdbcType="INTEGER" property="id" />
+    <id column="id" jdbcType="INTEGER" property="id" />
     <result column="cid" jdbcType="INTEGER" property="cid" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="start_time" jdbcType="BIGINT" property="startTime" />
@@ -13,7 +13,25 @@
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
     <result column="published" jdbcType="TINYINT" property="published" />
   </resultMap>
-  <insert id="insert" parameterType="nil.ed.onlineexam.entity.TestPaper">
+  <resultMap id="TestPaperVOResultMap" type="nil.ed.onlineexam.vo.TestPaperVO">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="cid" jdbcType="INTEGER" property="cid" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="start_time" jdbcType="BIGINT" property="startTime" />
+    <result column="end_time" jdbcType="BIGINT" property="endTime" />
+    <result column="test_duration" jdbcType="INTEGER" property="testDuration" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <collection ofType="nil.ed.onlineexam.vo.TestPaperQuestionVO" property="questions">
+      <id column="qid" jdbcType="INTEGER" property="id" />
+      <result column="type" jdbcType="TINYINT" property="type" />
+      <result column="content" jdbcType="VARCHAR" property="content" />
+      <result column="options" jdbcType="VARCHAR" property="options" />
+      <result column="first_seq" jdbcType="INTEGER" property="firstSeq" />
+      <result column="sec_seq" jdbcType="INTEGER" property="secSeq" />
+      <result column="q_score" jdbcType="INTEGER" property="score" />
+    </collection>
+  </resultMap>
+  <insert id="insert" parameterType="nil.ed.onlineexam.entity.TestPaper" useGeneratedKeys="true" keyProperty="id">
     insert into
     `t_test_paper` (`id`,
     `cid`,
@@ -35,8 +53,35 @@
     #{createTime,jdbcType=BIGINT})
   </insert>
 
-
   <delete id="deleteTestPaperById">
     delete from `t_test_paper` where `t_test_paper`.`id` = #{id}
   </delete>
+
+  <select id="getTestPaperById" resultMap="TestPaperVOResultMap">
+    select `ttp`.`id`,
+           `ttp`.`cid`,
+           `ttp`.`name`,
+           `ttp`.`start_time`,
+           `ttp`.`end_time`,
+           `ttp`.`test_duration`,
+           `ttp`.`score`,
+           `ttpci`.`qid`,
+           `ttpci`.`first_seq`,
+           `ttpci`.`sec_seq`,
+           `ttpci`.`score` as `q_score`,
+           `tq`.`type`,
+           `tq`.`content`,
+           `tq`.`options`
+    from `t_test_paper` `ttp`
+    left join `t_test_paper_content_item` `ttpci` on `ttp`.`id` = `ttpci`.`pid`
+    left join `t_question` tq on `tq`.`id` = `ttpci`.`qid`
+    where `ttpci`.`pid` = #{id} and `ttp`.`published` = 1
+    order by `first_seq` ASC, `sec_seq` ASC;
+  </select>
+
+  <update id="updatePublishedStatus">
+    update `t_test_paper`
+    set `published` = #{status}
+    where `id` = #{pid} and `creator` = #{uid};
+  </update>
 </mapper>
