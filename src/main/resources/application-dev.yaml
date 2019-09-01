@@ -9,7 +9,7 @@ spring:
     druid:
       type: com.alibaba.druid.pool.DruidDataSource
       driverClassName: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/onlineexamdb?useSSL=false
+      url: jdbc:mysql://localhost:3306/onlineexamdb?useSSL=false&characterEncoding=UTF-8&useUnicode=true
       username: root
       password: lw14757473dlxl
       initialSize: 5
