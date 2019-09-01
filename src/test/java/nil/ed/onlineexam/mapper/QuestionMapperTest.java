@@ -3,10 +3,14 @@ package nil.ed.onlineexam.mapper;
 import nil.ed.onlineexam.AbstractServiceTest;
 import nil.ed.onlineexam.common.enumm.QuestionTypeEnum;
 import nil.ed.onlineexam.entity.Question;
+import org.json.JSONArray;
 import org.junit.Test;
 
 import javax.annotation.Resource;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.stream.IntStream;
 
 public class QuestionMapperTest extends AbstractServiceTest {
     @Resource
@@ -14,25 +18,27 @@ public class QuestionMapperTest extends AbstractServiceTest {
 
     @Test
     public void insert() {
-        Question question = new Question();
-        question.setType(QuestionTypeEnum.OPTION.getCode());
+        IntStream.range(0, 10000).parallel().forEach(i -> {
+            Question question = new Question();
+            question.setType(QuestionTypeEnum.OPTION.getCode());
 
-        question.setContent("请问...?");
-        question.setAnswer("A");
-        question.setCreator(2);
-        question.setUpdater(2);
-        question.setUpdateTime(Instant.now().toEpochMilli());
-        question.setCreateTime(Instant.now().toEpochMilli());
-        question.setOptions("A:1,B:2,C:3,D:4");
+            question.setContent("请问...?");
+            question.setAnswer("A");
+            question.setCreator(2);
+            question.setUpdater(2);
+            question.setUpdateTime(Instant.now().toEpochMilli());
+            question.setCreateTime(Instant.now().toEpochMilli());
+            question.setOptions(new JSONArray(Arrays.asList("A:22131231","B:123123123")).toString());
 
-        mapper.insert(question);
-        question.setType(QuestionTypeEnum.SUBJECTIVE.getCode());
-        mapper.insert(question);
+            mapper.insert(question);
+            question.setType(QuestionTypeEnum.SUBJECTIVE.getCode());
+            mapper.insert(question);
+        });
     }
 
     @Test
     public void listQuestions() {
-        printAsJsonString(mapper.listQuestions());
+        printAsJsonString(mapper.listQuestions(0, 100));
     }
 
     @Test
