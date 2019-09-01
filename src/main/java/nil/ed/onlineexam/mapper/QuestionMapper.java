@@ -21,4 +21,6 @@ public interface QuestionMapper {
     Integer deleteQuestionById(@Param("id" )Integer id);
 
     Integer updateQuestion(@Param("question") Question question);
+
+    List<Question> listQuestionsRandomly(@Param("n") Integer n, @Param("type") Integer type);
 }

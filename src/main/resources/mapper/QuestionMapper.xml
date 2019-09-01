@@ -85,4 +85,11 @@
       `t_question`.`id` = #{question.id}
     </where>
   </update>
+
+  <select id="listQuestionsRandomly" resultMap="BaseResultMap">
+    select * from `t_question`
+    where `t_question`.`type` = #{type}
+    order by rand()
+    limit #{n};
+  </select>
 </mapper>
