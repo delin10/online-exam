@@ -4,6 +4,7 @@ import nil.ed.onlineexam.interceptor.CustomFilterSecurityInterceptor;
 import nil.ed.onlineexam.security.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.SecurityMetadataSource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -14,7 +15,6 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 
 @Configuration
 public class AuthSecurityConfig extends WebSecurityConfigurerAdapter {
-
     @Bean
     public CustomAuthenticationFailureHandler customAuthenticationFailureHandler(){
         return new CustomAuthenticationFailureHandler();
@@ -59,20 +59,24 @@ public class AuthSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.addFilterBefore(customFilterSecurityInterceptor(), FilterSecurityInterceptor.class)
-                .authorizeRequests()
-                .antMatchers("/exam/login.html")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .formLogin()
-                .loginPage("/exam/login.html")
-                .loginProcessingUrl("/exam/login")
-                .successHandler(customAuthenticationSuccessHandler())
-                .failureHandler(customAuthenticationFailureHandler())
-                .permitAll()
-                .and()
-                .csrf().disable();
+        /*
+        MIME类型不匹配阻止静态资源
+         */
+        http.headers().contentTypeOptions().disable();
+//        http.addFilterBefore(customFilterSecurityInterceptor(), FilterSecurityInterceptor.class)
+//                .authorizeRequests()
+//                .antMatchers("/exam/login.html")
+//                .permitAll()
+//                .anyRequest()
+//                .authenticated()
+//                .and()
+//                .formLogin()
+//                .loginPage("/exam/login.html")
+//                .loginProcessingUrl("/exam/login")
+//                .successHandler(customAuthenticationSuccessHandler())
+//                .failureHandler(customAuthenticationFailureHandler())
+//                .permitAll()
+//                .and()
+//                .csrf().disable();
     }
 }
