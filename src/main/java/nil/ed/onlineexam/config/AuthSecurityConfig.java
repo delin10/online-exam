@@ -9,11 +9,13 @@ import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.SecurityMetadataSource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 
 @Configuration
+@EnableWebSecurity
 public class AuthSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CustomAuthenticationFailureHandler customAuthenticationFailureHandler(){
@@ -63,20 +65,20 @@ public class AuthSecurityConfig extends WebSecurityConfigurerAdapter {
         MIME类型不匹配阻止静态资源
          */
         http.headers().contentTypeOptions().disable();
-//        http.addFilterBefore(customFilterSecurityInterceptor(), FilterSecurityInterceptor.class)
-//                .authorizeRequests()
-//                .antMatchers("/exam/login.html")
-//                .permitAll()
-//                .anyRequest()
-//                .authenticated()
-//                .and()
-//                .formLogin()
-//                .loginPage("/exam/login.html")
-//                .loginProcessingUrl("/exam/login")
-//                .successHandler(customAuthenticationSuccessHandler())
-//                .failureHandler(customAuthenticationFailureHandler())
-//                .permitAll()
-//                .and()
-//                .csrf().disable();
+        http.addFilterBefore(customFilterSecurityInterceptor(), FilterSecurityInterceptor.class)
+                .authorizeRequests()
+                .antMatchers("/exam/login.html")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .formLogin()
+                .loginPage("/exam/login.html")
+                .loginProcessingUrl("/exam/login")
+                .successHandler(customAuthenticationSuccessHandler())
+                .failureHandler(customAuthenticationFailureHandler())
+                .permitAll()
+                .and()
+                .csrf().disable();
     }
 }
