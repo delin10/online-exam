@@ -37,11 +37,17 @@
 
   <select id="listQuestions" resultMap="BaseResultMap">
     select * from `t_question`
+    <if test="type != null">
+      where type = #{type}
+    </if>
     limit #{pageStart},#{pageSize};
   </select>
 
   <select id="countQuestions" resultType="java.lang.Integer">
-    select count(*) from `t_question`;
+    select count(*) from `t_question`
+    <if test="type != null">
+      where type = #{type}
+    </if>
   </select>
 
   <select id="listQuestionsByCreator" resultMap="BaseResultMap">

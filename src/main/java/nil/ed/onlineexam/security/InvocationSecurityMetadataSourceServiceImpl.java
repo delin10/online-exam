@@ -28,9 +28,13 @@ public class InvocationSecurityMetadataSourceServiceImpl implements SecurityMeta
     @MethodInvokeLog
     @Override
     public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
+        /*
+        返回null不会执行decision逻辑
+         */
         loadDefinePermissions();
 
         FilterInvocation invocation = (FilterInvocation) object;
+        log.info("==> params: {}", invocation);
         String uri = invocation.getHttpRequest().getRequestURI();
         return configAttributeList.entrySet()
                 .stream()

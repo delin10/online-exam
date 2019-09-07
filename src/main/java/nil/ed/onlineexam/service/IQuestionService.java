@@ -17,7 +17,7 @@ public interface IQuestionService {
      * @param pageSize 页大小
      * @return 响应对象
      */
-    Response<PageResult<Question>> listQuestions(Integer pageNo, Integer pageSize);
+    Response<PageResult<Question>> listQuestions(Integer pageNo, Integer pageSize, Integer type);
 
     /**
      * 查看creator创建的题目

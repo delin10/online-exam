@@ -8,9 +8,9 @@ import java.util.List;
 public interface QuestionMapper {
     int insert(Question record);
 
-    List<Question> listQuestions(Integer pageStart, Integer pageSize);
+    List<Question> listQuestions(Integer pageStart, Integer pageSize, Integer type);
 
-    Integer countQuestions();
+    Integer countQuestions(@Param("type") Integer type);
 
     List<Question> listQuestionsByCreator(Integer creator, Integer pageStart, Integer pageSize);
 

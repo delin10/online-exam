@@ -31,12 +31,12 @@ public class QuestionServiceImpl implements IQuestionService {
     }
 
     @Override
-    public Response<PageResult<Question>> listQuestions(Integer pageNo, Integer pageSize) {
+    public Response<PageResult<Question>> listQuestions(Integer pageNo, Integer pageSize, Integer type) {
         return new SimpleSelectPageHelper<Question>(executor)
                 .setPageNo(pageNo)
                 .setPageSize(pageSize)
-                .setCounter(()-> questionMapper.countQuestions())
-                .operate(() -> questionMapper.listQuestions(PageUtils.calPageStart(pageNo, pageSize), pageSize));
+                .setCounter(()-> questionMapper.countQuestions(type))
+                .operate(() -> questionMapper.listQuestions(PageUtils.calPageStart(pageNo, pageSize), pageSize, type));
     }
 
     @Override

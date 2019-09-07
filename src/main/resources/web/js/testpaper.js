@@ -7,18 +7,18 @@ var paperTemplateStr = "<div>\n" +
     "        </div>\n" +
     "        <HR style=\"FILTER:alpha(opacity=100,finishopacity=0,style=3)\" width=\"90%\"color=#987cb9 SIZE=3>\n" +
     "        <div>\n" +
-    "            <form class=\"layui-form\" action=\"\">\n" +
+    "            <form class=\"layui-form\">\n" +
     "                {{#  layui.each(d.questions, function(index, item){ }}\n" +
     "                 <div class=\"layui-form-item\">\n" +
-    "                    {{#  if(item.type == 0){ }}\n" +
-    "                        <div>{{ item.secSeq }}. {{ item.content }}({{ item.score }})</div>\n" +
+    "                     <div>{{ item.firstSeq }}-{{ item.secSeq }}. {{ item.content }}({{ item.score }})</div>\n" +
+    "                     {{#  if(item.type == 0){ }}\n" +
     "                        <div>\n" +
     "                        {{#  layui.each(JSON.parse(item.options), function(index, option){ }}\n" +
     "                            <input type=\"radio\" name=\"qid{{ item.id }}\" value=\"{{ index }}\" title=\"{{ option }}\" class=\"layui-input\"/>\n" +
     "                        {{# }); }}\n" +
     "                         </div>\n" +
     "                    {{#  } else { }}\n" +
-    "                        <div>{{ item.secSeq }}. {{ item.content }}({{ item.score }})</div>\n<br />" +
+    "                        <br />\n" +
     "                        <div>\n" +
     "                            <textarea name=\"qid{{ item.id }}\" placeholder=\"请输入内容\" class=\"layui-textarea\"></textarea>\n" +
     "                        </div>\n" +
@@ -27,14 +27,14 @@ var paperTemplateStr = "<div>\n" +
     "                {{#  }); }}\n" +
     "                <div class=\"layui-form-item\">\n" +
     "                    <div class=\"layui-input-block\">\n" +
-    "                        <button class=\"layui-btn\" lay-submit lay-filter=\"submitAnswer\">提交答案</button>\n" +
+    "                        <button class=\"layui-btn\" lay-submit lay-filter=\"submit-answer\">提交答案</button>\n" +
     "                    </div>\n" +
     "                </div>\n" +
     "            </form>\n" +
     "        </div>"
 
-layui.use(['jquery','laytpl', "form"], function(){
-    var laytpl = layui.laytpl, $ = layui.jquery, form = layui.form;
+layui.use(['jquery','laytpl', "form", "table"], function(){
+    var laytpl = layui.laytpl, $ = layui.jquery, form = layui.form, table = layui.table;
 
     //你也可以采用下述同步写法，将 render 方法的回调函数剔除，可直接返回渲染好的字符
     var paperTemplate =  laytpl(paperTemplateStr);
@@ -54,6 +54,9 @@ layui.use(['jquery','laytpl', "form"], function(){
         console.log(data)
         return false
     })
+
+    //////////////////////////////////////////////////////addTestPaper
+
 });
 
 function submit(){

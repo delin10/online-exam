@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class TestPaperVO {
+public class TestPaperWithQuestionsVO extends BaseTestPaperVO {
     private Integer id;
 
     private Integer cid;

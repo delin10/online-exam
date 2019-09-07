@@ -8,6 +8,11 @@
 <body>
     <div class="layui-container">
         <div class="layui-row">
+            <table class="exist-test-paper" lay-filter="exist-test-paper">
+
+            </table>
+        </div>
+        <div class="layui-row">
             <div class="layui-col-md1"></div>
             <div id="paper-container" class="layui-col-md8">
             </div>
@@ -28,15 +33,14 @@
             <form class="layui-form">
                 {{#  layui.each(d.questions, function(index, item){ }}
                  <div class="layui-form-item">
-                    {{#  if(item.type == 0){ }}
-                        <div>{{ item.secSeq }}. {{ item.content }}({{ item.score }})</div>
+                     <div>{{ item.firstSeq }}-{{ item.secSeq }}. {{ item.content }}({{ item.score }})</div>
+                     {{#  if(item.type == 0){ }}
                         <div>
                         {{#  layui.each(JSON.parse(item.options), function(index, option){ }}
                             <input type="radio" name="qid{{ item.id }}" value="{{ index }}" title="{{ option }}" class="layui-input"/>
                         {{# }); }}
                          </div>
                     {{#  } else { }}
-                        <div>{{ item.secSeq }}. {{ item.content }}({{ item.score }})</div>
                         <br />
                         <div>
                             <textarea name="qid{{ item.id }}" placeholder="请输入内容" class="layui-textarea"></textarea>

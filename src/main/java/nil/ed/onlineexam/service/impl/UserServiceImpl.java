@@ -9,6 +9,7 @@ import nil.ed.onlineexam.mapper.UserMapper;
 import nil.ed.onlineexam.security.CustomPasswordEncoder;
 import nil.ed.onlineexam.service.IUserService;
 import nil.ed.onlineexam.service.exception.VerifyInfoIncorrectException;
+import nil.ed.onlineexam.service.support.impl.SimpleSelectOneHelper;
 import nil.ed.onlineexam.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
-@Service
+@Service("userService")
 public class UserServiceImpl implements IUserService {
     private static String INITIAL_PWD = "123456";
 
@@ -49,6 +50,12 @@ public class UserServiceImpl implements IUserService {
                 .setData(userVO)
                 .setCodeEnum(ResponseCodeEnum.SUCCESS)
                 .build();
+    }
+
+    @Override
+    public Response<User> getUser(Integer uid) {
+        return new SimpleSelectOneHelper<User>()
+                .operate(() -> userMapper.getUserById(uid));
     }
 
     @Override

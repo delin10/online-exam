@@ -17,6 +17,13 @@ public interface IUserService {
     Response<UserVO> getUserInfo(Integer uid);
 
     /**
+     * 获取用户信息，包含敏感信息
+     * @param uid
+     * @return
+     */
+    Response<User> getUser(Integer uid);
+
+    /**
      * 改变用户的角色，只有管理员具有这个资格
      *
      * @param uid 被修改角色的用户id
