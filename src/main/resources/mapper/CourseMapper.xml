@@ -3,13 +3,15 @@
 <mapper namespace="nil.ed.onlineexam.mapper.CourseMapper">
   <resultMap id="BaseResultMap" type="nil.ed.onlineexam.entity.Course">
     <result column="id" jdbcType="INTEGER" property="id" />
-    <result column="content" jdbcType="VARCHAR" property="name" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="teacher" jdbcType="INTEGER" property="teacher" />
     <result column="status" jdbcType="TINYINT" property="status" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
-    <result column="update_time" jdbcType="BIGINT" property="updateTime" />    <result column="create_time" jdbcType="BIGINT" property="createTime" />
-    <result column="start_time" jdbcType="BIGINT" property="startTime" />    <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="start_time" jdbcType="BIGINT" property="startTime" />
     <result column="end_time" jdbcType="BIGINT" property="endTime" />
+  </resultMap>
+  <resultMap id="CourseVOResultMap" type="nil.ed.onlineexam.vo.CourseVO" extends="BaseResultMap">
+    <result column="teacher_name" jdbcType="VARCHAR" property="teacherName"/>
   </resultMap>
 
   <insert id="insert" parameterType="nil.ed.onlineexam.entity.Course">
@@ -22,7 +24,7 @@
     `start_time`,
     `end_time`,
     `status`)
-    values(#{course.id},
+    values(NULL,
     #{course.name},
     #{course.teacher},
     #{course.createTime},
@@ -74,7 +76,22 @@
     #{joinedCourse.id},
     #{joinedCourse.id},
     #{joinedCourse.id})
-
-
   </insert>
+
+  <select id="listJoinedCourses" resultMap="CourseVOResultMap">
+    select `t_course`.*, `t_user`.`nick_name` as `teacher_name`
+    from `t_course`
+    left join `t_joined_course` on `t_course`.`id` = `t_joined_course`.`cid`
+    left join `t_user` on `t_user`.`id` = `t_course`.`teacher`
+    where `t_joined_course`.`uid` = #{uid}
+  </select>
+
+  <select id="countJoinedCourses" resultType="java.lang.Integer">
+    select count(*)
+    from `t_course`
+    left join `t_joined_course` on `t_course`.`id` = `t_joined_course`.`cid`
+    left join `t_user` on `t_user`.`id` = `t_course`.`teacher`
+    where `t_joined_course`.`uid` = #{uid}
+  </select>
+
 </mapper>
