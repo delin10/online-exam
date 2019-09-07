@@ -57,4 +57,9 @@ public class CourseMapperTest extends AbstractServiceTest {
         course.setName("修改");
         mapper.updateCourse(course);
     }
+
+    @Test
+    public void listJoinedCourses() {
+        printAsJsonString(mapper.listJoinedCourses(2, 0, 20));
+    }
 }

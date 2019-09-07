@@ -4,6 +4,7 @@ import nil.ed.onlineexam.AbstractServiceTest;
 import nil.ed.onlineexam.common.enumm.QuestionTypeEnum;
 import nil.ed.onlineexam.entity.Question;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Test;
 
 import javax.annotation.Resource;
@@ -38,7 +39,7 @@ public class QuestionMapperTest extends AbstractServiceTest {
 
     @Test
     public void listQuestions() {
-        printAsJsonString(mapper.listQuestions(0, 100));
+        printAsJsonString(mapper.listQuestions(0, 100, 1));
     }
 
     @Test

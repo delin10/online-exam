@@ -69,4 +69,9 @@ public class TestPaperServiceImplTest extends AbstractServiceTest {
         jsonObject.put("score", 10);
         return jsonObject;
     }
+
+    @Test
+    public void joinTest() {
+        testPaperService.joinTest(2,2);
+    }
 }
