@@ -1,26 +1,47 @@
 package nil.ed.onlineexam.service.impl;
 
 import nil.ed.onlineexam.common.NormalResponseBuilder;
+import nil.ed.onlineexam.common.PageResult;
 import nil.ed.onlineexam.common.Response;
 import nil.ed.onlineexam.common.ResponseCodeEnum;
 import nil.ed.onlineexam.common.enumm.CourseStatusEnum;
 import nil.ed.onlineexam.entity.Course;
 import nil.ed.onlineexam.entity.JoinedCourse;
 import nil.ed.onlineexam.mapper.CourseMapper;
+import nil.ed.onlineexam.mapper.TestPaperMapper;
 import nil.ed.onlineexam.service.ICourseService;
 import nil.ed.onlineexam.service.support.impl.SimpleInsertHelper;
 import nil.ed.onlineexam.service.support.impl.SimpleSelectOneHelper;
+import nil.ed.onlineexam.service.support.impl.SimpleSelectPageHelper;
+import nil.ed.onlineexam.util.PageUtils;
+import nil.ed.onlineexam.vo.BaseTestPaperVO;
+import nil.ed.onlineexam.vo.CourseVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.concurrent.Executor;
 
 @Service("courseService")
 public class CourseServiceImpl implements ICourseService {
     private static final long INITIAL_JOIN_TEST_TIME = 1L;
     @Resource
     private CourseMapper courseMapper;
+
+    @Resource
+    private TestPaperMapper testPaperMapper;
+
+    private Executor executor;
+
+    @Autowired
+    @Qualifier("commonExecutor")
+    public void setExecutor(Executor executor) {
+        this.executor = executor;
+    }
 
     @Override
     public Response addCourse(Course course, Integer creator) {
@@ -33,7 +54,7 @@ public class CourseServiceImpl implements ICourseService {
     }
 
     @Override
-    public Response joinCourse(Integer joiner, Integer cid) {
+    public Response<Void> joinCourse(Integer joiner, Integer cid) {
         if (!isValid(cid)){
             return new NormalResponseBuilder<Void>()
                     .setCode(ResponseCodeEnum.FAILED.getCode())
@@ -49,18 +70,45 @@ public class CourseServiceImpl implements ICourseService {
         joinedCourse.setJoinTestTime(INITIAL_JOIN_TEST_TIME);
         joinedCourse.setCreateTime(Instant.now().toEpochMilli());
         joinedCourse.setUpdateTime(Instant.now().toEpochMilli());
-
-        return new SimpleInsertHelper()
-                .operate(()->{
-                    courseMapper.joinCourse(joinedCourse);
-                    return null;
-                });
+        try {
+            return new SimpleInsertHelper()
+                    .operate(() -> {
+                        courseMapper.joinCourse(joinedCourse);
+                        return null;
+                    });
+        }catch (DuplicateKeyException e){
+            return new NormalResponseBuilder<Void>()
+                    .setCodeEnum(ResponseCodeEnum.DUPLICATE_OPERATION)
+                    .build();
+        }
     }
 
     @Override
     public Response getCourse(Integer cid) {
         return new SimpleSelectOneHelper<Course>()
                 .operate(() -> courseMapper.getCourseById(cid));
+    }
+
+    @Override
+    public Response<PageResult<BaseTestPaperVO>> listPublishedTestPapersOf(Integer cid, Integer uid) {
+        int pageNo = 0;
+        int pageSize = 20;
+        return new SimpleSelectPageHelper<BaseTestPaperVO>(executor)
+                .setPageNo(pageNo)
+                .setPageSize(pageSize)
+                .setCounter(() -> testPaperMapper.countPublishedTestPapersOf(uid, cid))
+                .operate(() -> testPaperMapper.listPublishedTestPapersOf(uid, cid, PageUtils.calPageStart(pageNo, pageSize),  pageSize));
+    }
+
+    @Override
+    public Response<PageResult<CourseVO>> listJoinedCourses(Integer uid) {
+        int pageNo = 0;
+        int pageSize = 20;
+        return new SimpleSelectPageHelper<CourseVO>(executor)
+                .setPageNo(pageNo)
+                .setPageSize(pageSize)
+                .setCounter(() -> courseMapper.countJoinedCourses(uid))
+                .operate(() -> courseMapper.listJoinedCourses(uid, PageUtils.calPageStart(pageNo, pageSize), pageSize));
     }
 
     /**
