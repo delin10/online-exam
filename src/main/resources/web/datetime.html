@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/exam/layui/css/layui.css" media="all">
+</head>
+<body>
+<div class="layui-form">
+    <div class="layui-inline">
+        <label class="layui-form-label">年选择器</label>
+        <div class="layui-input-inline">
+            <input type="text" id="test2" placeholder="yyyy"/>
+        </div>
+    </div>
+</div>
+
+<script src="/exam/layui/layui.js" type="application/javascript"></script>
+
+<script type="application/javascript">
+    layui.use(['form','laydate'], function() {
+       layui.laydate.render({
+           elem: "#test2",
+           value: '2017-09-10'
+       })
+    });
+</script>
+</body>
+</html>
