@@ -3,6 +3,7 @@ package nil.ed.onlineexam.util;
 import com.alibaba.fastjson.JSONObject;
 import com.esotericsoftware.reflectasm.MethodAccess;
 import com.google.common.collect.Maps;
+import nil.ed.onlineexam.entity.TestPaper;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
@@ -56,7 +57,14 @@ public class ReflectionAsmUtils {
         for (Field field : toDeclaredFields) {
             String name = field.getName();
             String setterName = "set"+StringUtils.capitalize(name);
-            toMethodAccess.invoke(to, setterName, from.getOrDefault(name, null));
+            System.out.println("copy:"+name);
+            toMethodAccess.invoke(to, setterName, from.getObject(name, field.getType()));
         }
+    }
+
+    public static void main(String[] args) {
+        JSONObject jo = JSONObject.parseObject("{\"score\":\"100\",\"startTime\":1568044800000,\"endTime\":1568131200000,\"testDuration\":\"60\",\"options\":[{\"qid\":165,\"score\":\"1\"},{\"qid\":133,\"score\":\"1\"}],\"subjectives\":[{\"qid\":165,\"score\":\"1\"},{\"qid\":133,\"score\":\"1\"}]}");
+        TestPaper testPaper = new TestPaper();
+        copyProperties(jo,testPaper);
     }
 }
