@@ -2,11 +2,10 @@ package nil.ed.onlineexam.service;
 
 import com.alibaba.fastjson.JSONObject;
 import nil.ed.onlineexam.common.CommonVO;
+import nil.ed.onlineexam.common.PageResult;
 import nil.ed.onlineexam.common.Response;
-import nil.ed.onlineexam.entity.TestPaper;
-import nil.ed.onlineexam.vo.TestPaperVO;
-
-import java.awt.image.RescaleOp;
+import nil.ed.onlineexam.vo.TestPaperWithQuestionsVO;
+import nil.ed.onlineexam.vo.UserTestVO;
 
 /**
  * 试卷管理
@@ -24,7 +23,7 @@ public interface ITestPaperService {
      * @param pid 试卷id
      * @return 响应对象
      */
-    Response<TestPaperVO> getTestPaper(Integer pid);
+    Response<TestPaperWithQuestionsVO> getTestPaper(Integer pid);
 
     /**
      * 随机生成试卷
@@ -40,4 +39,19 @@ public interface ITestPaperService {
      * @return
      */
     Response<Void> publishedTest(Integer pid, Integer currentUser);
+
+    /**
+     * 参加考试
+     * @param joiner 参加考试的学生
+     * @param tid 试卷id
+     * @return 参加结果
+     */
+    Response<Void> joinTest(Integer joiner, Integer tid);
+
+    /**
+     * 获取uid用户可以参加或者已经参加的所有考试信息
+     * @param uid 用户id
+     * @return 考试信息分页列表
+     */
+    Response<PageResult<UserTestVO>> listCanJoinOrHaveJoinedTests(Integer uid);
 }
