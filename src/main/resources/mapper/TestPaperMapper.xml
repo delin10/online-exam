@@ -13,14 +13,17 @@
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
     <result column="published" jdbcType="TINYINT" property="published" />
   </resultMap>
-  <resultMap id="TestPaperVOResultMap" type="nil.ed.onlineexam.vo.TestPaperVO">
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="cid" jdbcType="INTEGER" property="cid" />
-    <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="start_time" jdbcType="BIGINT" property="startTime" />
-    <result column="end_time" jdbcType="BIGINT" property="endTime" />
-    <result column="test_duration" jdbcType="INTEGER" property="testDuration" />
-    <result column="score" jdbcType="INTEGER" property="score" />
+  <resultMap id="BaseTestPaperVOResultMap" type="nil.ed.onlineexam.vo.BaseTestPaperVO">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="cid" jdbcType="INTEGER" property="cid" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="start_time" jdbcType="BIGINT" property="startTime" />
+        <result column="end_time" jdbcType="BIGINT" property="endTime" />
+        <result column="test_duration" jdbcType="INTEGER" property="testDuration" />
+        <result column="score" jdbcType="INTEGER" property="score" />
+        <result column="course_name" jdbcType="VARCHAR" property="courseName"/>
+  </resultMap>
+  <resultMap id="TestPaperVOResultMap" type="nil.ed.onlineexam.vo.TestPaperWithQuestionsVO" extends="BaseTestPaperVOResultMap">
     <collection ofType="nil.ed.onlineexam.vo.TestPaperQuestionVO" property="questions">
       <id column="qid" jdbcType="INTEGER" property="id" />
       <result column="type" jdbcType="TINYINT" property="type" />
@@ -30,6 +33,9 @@
       <result column="sec_seq" jdbcType="INTEGER" property="secSeq" />
       <result column="q_score" jdbcType="INTEGER" property="score" />
     </collection>
+  </resultMap>
+  <resultMap id="UserTestVOResultMap" type="nil.ed.onlineexam.vo.UserTestVO" extends="BaseTestPaperVOResultMap">
+      <result column="join_time" jdbcType="BIGINT" property="joinTime"/>
   </resultMap>
   <insert id="insert" parameterType="nil.ed.onlineexam.entity.TestPaper" useGeneratedKeys="true" keyProperty="id">
     insert into
@@ -71,10 +77,12 @@
            `ttpci`.`score` as `q_score`,
            `tq`.`type`,
            `tq`.`content`,
-           `tq`.`options`
+           `tq`.`options`,
+           `t_course`.name as `course_name`
     from `t_test_paper` `ttp`
     left join `t_test_paper_content_item` `ttpci` on `ttp`.`id` = `ttpci`.`pid`
     left join `t_question` tq on `tq`.`id` = `ttpci`.`qid`
+    left join `t_course` on `t_course`.`id` = `ttp`.`cid`
     where `ttpci`.`pid` = #{id} and `ttp`.`published` = 1
     order by `first_seq` ASC, `sec_seq` ASC;
   </select>
@@ -84,4 +92,87 @@
     set `published` = #{status}
     where `id` = #{pid} and `creator` = #{uid};
   </update>
+
+  <select id="listPublishedTestPapersOf" resultMap="BaseTestPaperVOResultMap">
+    select `ttp`.`id`,
+           `ttp`.`cid`,
+           `ttp`.`name`,
+           `ttp`.`start_time`,
+           `ttp`.`end_time`,
+           `ttp`.`test_duration`,
+           `ttp`.`score`,
+           `t_course`.name as `course_name`
+    from `t_test_paper` `ttp`
+    left join `t_joined_course` `tjc` on `tjc`.`cid` = `ttp`.`cid`
+    left join `t_course` on `t_course`.`id` = `ttp`.`cid`
+    <where>
+        `tjc`.`uid` = #{uid}
+        and `ttp`.`published` = 1
+        <if test="cid != null">
+            and `ttp`.`cid` = #{cid}
+        </if>
+    </where>
+    order by `ttp`.`start_time`
+    limit #{pageStart},#{pageSize};
+  </select>
+  <select id="countPublishedTestPapersOf" resultType="java.lang.Integer">
+    select count(*)
+    from `t_test_paper` `ttp`
+    left join `t_joined_course` `tjc` on `tjc`.`cid` = `ttp`.`cid`
+    left join `t_course` on `t_course`.`id` = `tjc`.`cid`
+    <where>
+        `tjc`.`uid` = #{uid}
+        and `ttp`.`published` = 1
+        <if test="cid != null">
+            and `ttp`.`cid` = #{cid}
+        </if>
+    </where>
+  </select>
+
+
+    <select id="listUserTestsOf" resultMap="UserTestVOResultMap">
+        select `ttp`.`id`,
+        `ttp`.`cid`,
+        `ttp`.`name`,
+        `ttp`.`start_time`,
+        `ttp`.`end_time`,
+        `ttp`.`test_duration`,
+        `ttp`.`score`,
+        `t_course`.name as `course_name`,
+        `tjt`.`create_time` as `join_time`
+        from `t_test_paper` `ttp`
+        left join `t_joined_test` `tjt` on `tjt`.`tid` = `ttp`.`id`
+        left join `t_joined_course` `tjc` on `ttp`.`cid` = `tjc`.cid
+        left join `t_course` on `t_course`.`id` = `ttp`.`cid`
+        <where>
+            `tjc`.`uid` = #{uid}
+            and `ttp`.`published` = 1
+            <if test="cid != null">
+                and `ttp`.`cid` = #{cid}
+            </if>
+        </where>
+        order by `ttp`.`start_time`
+        limit #{pageStart},#{pageSize};
+    </select>
+    <select id="countUserTestsOf" resultType="java.lang.Integer">
+        select count(*)
+        from `t_test_paper` `ttp`
+        left join `t_joined_test` tjt on tjt.`tid` = `ttp`.`id`
+        left join `t_joined_course` `tjc` on `ttp`.`cid` = `tjc`.cid
+        left join `t_course` on `t_course`.`id` = tjt.`tid`
+        <where>
+            `tjc`.`uid` = #{uid}
+            and `ttp`.`published` = 1
+            <if test="cid != null">
+                and `ttp`.`cid` = #{cid}
+            </if>
+        </where>
+    </select>
+
+  <select id="getCanJoinedTestOrNULL" resultMap="BaseResultMap">
+    select `t_test_paper`.*
+    from `t_test_paper`
+    left join `t_joined_course` on `t_test_paper`.`cid` = `t_joined_course`.`cid`
+    where `t_joined_course`.`uid` = #{uid} and `t_test_paper`.`id` = #{tid} and `t_test_paper`.`published` = 1;
+  </select>
 </mapper>
