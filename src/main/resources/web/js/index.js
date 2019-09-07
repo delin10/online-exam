@@ -1,4 +1,4 @@
-var host = "http://localhost:8081/exam"
+let host = "http://localhost:8081/exam"
 
 function dateToTime(unixTime){
     var type= "Y-M-D H:i:s"
@@ -30,4 +30,51 @@ function dateToTime(unixTime){
         };
     };
     return datetime;
+}
+
+function renderLayDate(id, type){
+    type = type || "date"
+    layui.laydate.render({
+        elem: id,
+        type: type
+        ,format:'yyyy-MM-dd HH:mm:ss'
+        ,trigger: 'click'
+    })
+
+    layui.form.render()
+}
+
+function getObjFromForm(jquery, id){
+    var formObj = {};
+    var t = jquery("#"+id).serializeArray();
+    jquery.each(t, function () {
+        formObj[this.name] = this.value;
+    });
+    return formObj;
+}
+
+function basePageMapper(res) {
+    return {
+        "code": res.code, //解析接口状态
+        "msg": res.message, //解析提示文本
+        "count": res.data.total, //解析数据长度
+        "data": res.data.data //解析数据列表
+    }
+}
+
+function postAndAlertMessage(url, data, callback) {
+    let $ = layui.jquery;
+    var config = {}
+    config.url = url;
+    if(data) {
+        config.data = data;
+    }
+    config.statusCode = {
+        200: callback || responseProcessor.alertMessage
+    }
+    $.post(config);
+}
+var responseProcessor= {
+    alertMessage: res => alert(res),
+    printResponse: res => console.log(res)
 }
