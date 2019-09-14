@@ -62,19 +62,40 @@ function basePageMapper(res) {
     }
 }
 
+function baseMapper(res) {
+    console.log(res);
+    return {
+        "code": res.code, //解析接口状态
+        "msg": res.message, //解析提示文本
+        "count": res.data.length, //解析数据长度
+        "data": res.data //解析数据列表
+    }
+}
+
 function postAndAlertMessage(url, data, callback) {
     let $ = layui.jquery;
     var config = {}
     config.url = url;
     if(data) {
-        config.data = data;
+        config.data = JSON.stringify(data);
     }
+    config.contentType = "application/json";
     config.statusCode = {
-        200: callback || responseProcessor.alertMessage
+        200: callback || responseProcessor.alertMessage,
+        500: callback || responseProcessor.alertMessage
     }
     $.post(config);
 }
 var responseProcessor= {
-    alertMessage: res => alert(res),
+    alertMessage: res => alert(res.message),
     printResponse: res => console.log(res)
+}
+
+function getQueryString(name){
+    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if(r!=null) {
+        return unescape(r[2]);
+    }
+    return null;
 }
