@@ -12,6 +12,15 @@
   </resultMap>
   <resultMap id="CourseVOResultMap" type="nil.ed.onlineexam.vo.CourseVO" extends="BaseResultMap">
     <result column="teacher_name" jdbcType="VARCHAR" property="teacherName"/>
+    <result column="join_time" jdbcType="BIGINT" property="joinTime"/>
+  </resultMap>
+
+  <resultMap id="CourseWithStudentsVO" type="nil.ed.onlineexam.vo.CourseWithStudentsVO" extends="BaseResultMap">
+    <collection property="students" ofType="nil.ed.onlineexam.vo.UserOfCourseVO">
+      <result column="user_id" jdbcType="INTEGER" property="id" />
+      <result column="user_nick_name" jdbcType="VARCHAR" property="nickName"/>
+      <result column="user_join_time" jdbcType="BIGINT" property="joinTime"/>
+    </collection>
   </resultMap>
 
   <insert id="insert" parameterType="nil.ed.onlineexam.entity.Course">
@@ -34,8 +43,33 @@
     #{course.status})
   </insert>
 
-  <select id="listCourses" resultMap="BaseResultMap">
-    select * from `t_course`;
+  <select id="listCourses" resultMap="CourseVOResultMap">
+    select `t_course`.*,`t_user`.`nick_name` as `teacher_name`,`t_joined_course`.`create_time` as `join_time`
+    from `t_course`
+    left join `t_user` on `t_user`.`id` = `t_course`.`teacher`
+    left join `t_joined_course` on `t_course`.`id` = `t_joined_course`.`cid`
+    <where>
+      <if test="currentUser != null">
+        `t_user`.`id` = #{currentUser}
+      </if>
+    </where>
+    order by `t_course`.`create_time`
+    limit #{pageStart},#{pageSize}
+  </select>
+
+  <select id="countCourses" resultType="java.lang.Integer">
+    select count(*) from `t_course`
+  </select>
+
+  <select id="countCoursesIfUser" resultType="java.lang.Integer">
+    select count(*) from `t_course`
+    left join `t_user` on `t_user`.`id` = `t_course`.`teacher`
+    left join `t_joined_course` on `t_course`.`id` = `t_joined_course`.`cid`
+    <where>
+      <if test="currentUser != null">
+        `t_user`.`id` = #{currentUser}
+      </if>
+    </where>
   </select>
 
   <select id="getCourseById" resultMap="BaseResultMap">
@@ -66,16 +100,14 @@
     `uid`,
     `cid`,
     `score`,
-    `join_test_time`,
     `create_time`,
     `update_time`)
     values(#{joinedCourse.id},
-    #{joinedCourse.id},
-    #{joinedCourse.id},
-    #{joinedCourse.id},
-    #{joinedCourse.id},
-    #{joinedCourse.id},
-    #{joinedCourse.id})
+    #{joinedCourse.uid},
+    #{joinedCourse.cid},
+    #{joinedCourse.score},
+    #{joinedCourse.createTime},
+    #{joinedCourse.updateTime})
   </insert>
 
   <select id="listJoinedCourses" resultMap="CourseVOResultMap">
@@ -94,4 +126,23 @@
     where `t_joined_course`.`uid` = #{uid}
   </select>
 
+  <select id="listCourseWithStudents" resultMap="CourseWithStudentsVO">
+    select `t_course`.*,
+           `t_user`.`id` as `user_id`,
+           `t_user`.`nick_name` as `user_nick_name`,
+           `t_joined_course`.`create_time` as `user_join_time`
+    from `t_course`
+    left join `t_joined_course` on `t_course`.`id` = `t_joined_course`.`cid`
+    left join `t_user` on `t_joined_course`.`uid` = `t_user`.`id`
+    <where>
+        <if test="cid != null">
+          `t_course`.`id` = #{cid}
+        </if>
+        <if test="currentUser != null">
+          and `t_course`.`teacher` = #{currentUser}
+        </if>
+    </where>
+    order by `t_course`.`create_time` DESC
+    limit #{pageStart},#{pageSize}
+  </select>
 </mapper>
