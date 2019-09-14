@@ -58,13 +58,14 @@ public class InvocationSecurityMetadataSourceServiceImpl implements SecurityMeta
         if (configAttributeList == null) {
             synchronized(LOCK){
                 if (configAttributeList == null) {
-                    List<Permission> permissionList = permissionMapper.listAllResources();
-                    configAttributeList = new HashMap<>(permissionList.size() + 1, 1);
-                    for (Permission permission : permissionList){
-                        configAttributeList.put(permission.getUri(),Collections.singleton(new SecurityConfig(permission.getUri())));
-                    }
+
                 }
             }
+        }
+        List<Permission> permissionList = permissionMapper.listAllResources();
+        configAttributeList = new HashMap<>(permissionList.size() + 1, 1);
+        for (Permission permission : permissionList){
+            configAttributeList.put(permission.getUri(),Collections.singleton(new SecurityConfig(permission.getUri())));
         }
     }
 }
