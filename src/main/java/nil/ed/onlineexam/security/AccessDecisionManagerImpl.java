@@ -19,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 决策逻辑
@@ -55,12 +56,13 @@ public class AccessDecisionManagerImpl implements AccessDecisionManager {
         }else {
             roleId = Integer.valueOf(authority.getAuthority());
         }
-        if (roleId != 0) {
+        if (roleId != 1) {
             // 获取并且映射权限列表
             List<Permission> permissionList = roleService.listPermissionOfRole(roleId);
             ConfigAttribute configAttribute = collection.iterator().next();
 
             permissionList.stream().map(Permission::getUri)
+                    .filter(Objects::nonNull)
                     .filter(configAttribute.getAttribute()::equals)
                     .findFirst()
                     .orElseThrow(() -> new AccessDeniedException("access denied"));
