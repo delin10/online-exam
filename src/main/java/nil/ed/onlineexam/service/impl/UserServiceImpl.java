@@ -2,6 +2,7 @@ package nil.ed.onlineexam.service.impl;
 
 import nil.ed.onlineexam.aop.annotation.MethodInvokeLog;
 import nil.ed.onlineexam.common.NormalResponseBuilder;
+import nil.ed.onlineexam.common.PageResult;
 import nil.ed.onlineexam.common.Response;
 import nil.ed.onlineexam.common.ResponseCodeEnum;
 import nil.ed.onlineexam.entity.User;
@@ -10,14 +11,18 @@ import nil.ed.onlineexam.security.CustomPasswordEncoder;
 import nil.ed.onlineexam.service.IUserService;
 import nil.ed.onlineexam.service.exception.VerifyInfoIncorrectException;
 import nil.ed.onlineexam.service.support.impl.SimpleSelectOneHelper;
+import nil.ed.onlineexam.service.support.impl.SimpleSelectPageHelper;
+import nil.ed.onlineexam.util.PageUtils;
 import nil.ed.onlineexam.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
@@ -34,11 +39,15 @@ public class UserServiceImpl implements IUserService {
     @Resource
     private UserMapper userMapper;
 
+    private Executor executor;
+
     private CustomPasswordEncoder customPasswordEncoder;
 
     @Autowired
-    public UserServiceImpl(CustomPasswordEncoder customPasswordEncoder) {
+    public UserServiceImpl(CustomPasswordEncoder customPasswordEncoder,
+                           @Qualifier("commonExecutor") Executor executor) {
         this.customPasswordEncoder = customPasswordEncoder;
+        this.executor = executor;
     }
 
     @Override
@@ -61,6 +70,13 @@ public class UserServiceImpl implements IUserService {
     @Override
     @MethodInvokeLog
     public Response<Void> changeRoleOfUser(Integer uid, Integer roleId, Integer opUid) {
+        if (uid.equals(opUid)){
+            return new NormalResponseBuilder<Void>()
+                    .setCode(ResponseCodeEnum.FAILED.getCode())
+                    .setMessage("不能修改自己的角色")
+                    .build();
+        }
+
         Integer updateResult = userMapper.updateRoleOfUser(uid, roleId, opUid);
 
 
@@ -130,6 +146,17 @@ public class UserServiceImpl implements IUserService {
         return getUserInfo(user.getId());
     }
 
+    @Override
+    public Response<PageResult<UserVO>> listUsers() {
+        Integer pageNo = 0;
+        Integer pageSize = Integer.MAX_VALUE;
+        return new SimpleSelectPageHelper<UserVO>(executor)
+                .setPageNo(pageNo)
+                .setPageSize(pageSize)
+                .setCounter(() -> userMapper.countUsers())
+                .operate(() -> userMapper.listUserVOs(PageUtils.calPageStart(pageNo, pageSize), pageSize));
+    }
+
     private boolean checkVerifyInfo(User verifyInfo){
         User user = userMapper.getUserById(verifyInfo.getId());
 
@@ -185,7 +212,7 @@ public class UserServiceImpl implements IUserService {
         long currentTime = Instant.now().toEpochMilli();
         user.setPasswordMd5(customPasswordEncoder.encode(user.getPasswordMd5()));
         user.setCreateTime(currentTime);
-        user.setLastUpdateTime(currentTime);
+        user.setUpdateTime(currentTime);
         user.setRole(NORMAL_ROLE);
         user.setId(null);
     }

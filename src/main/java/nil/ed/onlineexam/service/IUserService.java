@@ -1,5 +1,6 @@
 package nil.ed.onlineexam.service;
 
+import nil.ed.onlineexam.common.PageResult;
 import nil.ed.onlineexam.common.Response;
 import nil.ed.onlineexam.entity.User;
 import nil.ed.onlineexam.vo.UserVO;
@@ -47,4 +48,10 @@ public interface IUserService {
      * @return 注册后的信息
      */
     Response<UserVO> register(User user);
+
+    /**
+     * 显示所有用户
+     * @return 分页信息
+     */
+    Response<PageResult<UserVO>> listUsers();
 }

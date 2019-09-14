@@ -21,7 +21,12 @@ public interface UserMapper {
 
     UserVO getUserVO(@Param("id") Integer id);
 
+    List<UserVO> listUserVOs(@Param("pageStart") Integer pageStart, @Param("pageSize") Integer pageSize);
+
+    Integer countUsers();
+
     Integer updateRoleOfUser(@Param("id") Integer id, @Param("roleId") Integer roleId, @Param("updater") Integer updater);
 
     Integer updatePasswordOfUser(@Param("id") Integer id, @Param("newPwd") String encryptPwd);
+
 }

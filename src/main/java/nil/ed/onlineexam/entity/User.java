@@ -11,7 +11,7 @@ public class User {
 
     private Long createTime;
 
-    private Long lastUpdateTime;
+    private Long updateTime;
 
     public Integer getId() {
         return id;
@@ -53,11 +53,11 @@ public class User {
         this.createTime = createTime;
     }
 
-    public Long getLastUpdateTime() {
-        return lastUpdateTime;
+    public Long getUpdateTime() {
+        return updateTime;
     }
 
-    public void setLastUpdateTime(Long lastUpdateTime) {
-        this.lastUpdateTime = lastUpdateTime;
+    public void setUpdateTime(Long updateTime) {
+        this.updateTime = updateTime;
     }
 }
