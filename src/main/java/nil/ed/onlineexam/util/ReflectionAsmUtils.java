@@ -3,6 +3,7 @@ package nil.ed.onlineexam.util;
 import com.alibaba.fastjson.JSONObject;
 import com.esotericsoftware.reflectasm.MethodAccess;
 import com.google.common.collect.Maps;
+import nil.ed.onlineexam.aop.annotation.MethodInvokeLog;
 import nil.ed.onlineexam.entity.TestPaper;
 import org.apache.commons.lang3.StringUtils;
 
@@ -26,7 +27,7 @@ public class ReflectionAsmUtils {
     }
 
     public static <F,T> void copyProperties(F from, T to) {
-        copyProperties(from, to, name -> true, null);
+        copyProperties(from, to, name -> false, null);
 
     }
 
@@ -35,6 +36,15 @@ public class ReflectionAsmUtils {
 
     }
 
+    /**
+     * bug:无法拷贝父类的值
+     * @param from
+     * @param to
+     * @param exclude
+     * @param mapper
+     * @param <F>
+     * @param <T>
+     */
     public static <F,T> void copyProperties(F from, T to, Predicate<String> exclude, Map<String, String> mapper) {
         MethodAccess fromMethodAccess = get(from.getClass());
         MethodAccess toMethodAccess = get(to.getClass());
@@ -42,10 +52,12 @@ public class ReflectionAsmUtils {
         for (Field field : fromDeclaredFields) {
             String name = field.getName();
             try {
+                System.out.println("copying "+name);
                 if (exclude.negate().test(name)) {
                     String toPropertyName = Objects.isNull(mapper) ? name : mapper.getOrDefault(name, name);
                     Object value = fromMethodAccess.invoke(from, "get" + StringUtils.capitalize(name), (Object[])null);
                     toMethodAccess.invoke(to, "set" + StringUtils.capitalize(toPropertyName), value);
+                    System.out.println("copied "+name);
                 }
             } catch (Exception e) {/*ignore*/}
         }

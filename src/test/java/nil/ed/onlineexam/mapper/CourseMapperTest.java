@@ -8,6 +8,8 @@ import org.junit.Test;
 import javax.annotation.Resource;
 
 import java.time.Instant;
+import java.time.temporal.TemporalUnit;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -17,26 +19,29 @@ public class CourseMapperTest extends AbstractServiceTest {
 
     @Test
     public void insert() {
-        Course course = new Course();
-        course.setName("test");
-        course.setStatus(CourseStatusEnum.READY.getCode());
-        course.setTeacher(2);
-        course.setCreateTime(Instant.now().toEpochMilli());
-        course.setUpdateTime(Instant.now().toEpochMilli());
-        course.setStartTime(Instant.now().toEpochMilli());
-        course.setEndTime(Instant.now().toEpochMilli()+1000);
-        mapper.insert(course);
-        mapper.insert(course);
-        mapper.insert(course);
-        mapper.insert(course);
-        mapper.insert(course);
-        mapper.insert(course);
-        mapper.insert(course);
+        int i = 10;
+        while(i-->0) {
+            Course course = new Course();
+            course.setName("test");
+            course.setStatus(CourseStatusEnum.READY.getCode());
+            course.setTeacher(2);
+            course.setCreateTime(Instant.now().toEpochMilli());
+            course.setUpdateTime(Instant.now().toEpochMilli());
+            course.setStartTime(Instant.now().plusSeconds(100000L).toEpochMilli());
+            course.setEndTime(Instant.now().plusSeconds(100000000L).toEpochMilli());
+            mapper.insert(course);
+            mapper.insert(course);
+            mapper.insert(course);
+            mapper.insert(course);
+            mapper.insert(course);
+            mapper.insert(course);
+            mapper.insert(course);
+        }
     }
 
     @Test
     public void listCourses() {
-        printAsJsonString(mapper.listCourses());
+        printAsJsonString(mapper.listCourses(null, 0, 100));
     }
 
     @Test
@@ -61,5 +66,10 @@ public class CourseMapperTest extends AbstractServiceTest {
     @Test
     public void listJoinedCourses() {
         printAsJsonString(mapper.listJoinedCourses(2, 0, 20));
+    }
+
+    @Test
+    public void getCourseWithStudents() {
+
     }
 }

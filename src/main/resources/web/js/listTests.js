@@ -44,7 +44,7 @@ var testCols = [[
       title: "操作",
       toolbar: "#op-btn"
    }
-]]
+]];
 
 function testStatusMapper(d) {
    console.log(d);

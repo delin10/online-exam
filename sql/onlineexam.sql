@@ -182,6 +182,10 @@ insert into `t_resource` values (NULL, 'test', '/api/test/{id}', 0,unix_timestam
 insert into `t_resource` values (NULL, 'listQuestion', '/exam/question/list', 0,unix_timestamp(current_timestamp(3))*1000,unix_timestamp(current_timestamp(3))*1000, 0);
 insert into `t_resource` values (NULL, 'addTestPaper', '/exam/testPaper/add', 0,unix_timestamp(current_timestamp(3))*1000,unix_timestamp(current_timestamp(3))*1000, 0);
 insert into `t_resource` values (NULL, 'listTests', '/exam/testPaper/list', 0,unix_timestamp(current_timestamp(3))*1000,unix_timestamp(current_timestamp(3))*1000, 0);
+insert into `t_resource` values (NULL, 'joinCourse', '/exam/course/join/{cid}', 0,unix_timestamp(current_timestamp(3))*1000,unix_timestamp(current_timestamp(3))*1000, 0);
+insert into `t_resource` values (NULL, 'listAllResource', '/exam/resource/list/all', 0,unix_timestamp(current_timestamp(3))*1000,unix_timestamp(current_timestamp(3))*1000, 0);
+insert into `t_resource` values (NULL, 'authRoleResource', '/exam/role/auth', 0,unix_timestamp(current_timestamp(3))*1000,unix_timestamp(current_timestamp(3))*1000, 0);
+insert into `t_resource` values (NULL, 'addResource', '/exam/resource/add', 0,unix_timestamp(current_timestamp(3))*1000,unix_timestamp(current_timestamp(3))*1000, 0);
 
 insert into `t_joined_course` values (NULL, 2, 10 , -1, 1,unix_timestamp(current_timestamp(3))*1000,unix_timestamp(current_timestamp(3))*1000);
 
@@ -196,3 +200,5 @@ left join `t_role_resource` trr on `tr`.`id` = `trr`.`role_id`
 left join `t_resource` trs on `trs`.`id` = `trr`.`resource_id`
 where `tr`.`id` = 2;
 */
+
+select 1 from (select count(*) as c from `t_resource` where id in (1,2)) t where t.c == 2 ;
