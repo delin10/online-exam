@@ -27,9 +27,12 @@ layui.use(["table","layer", "form","laydate","element"], function(){
             }
         }
     })
-
+    layui.layer.open({
+        type: 1,
+        title: "test"
+    })
     layui.form.render()
-
+    console.log(renderLayDate)
     renderLayDate("#startTime","datetime")
     renderLayDate("#endTime","datetime")
 
