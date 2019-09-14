@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>添加资源</title>
+  <link rel="stylesheet" href="/exam/layui/css/layui.css">
+  <link rel="stylesheet" href="/exam/layui/css/modules/layer/default/layer.css">
+
+</head>
+<body>
+<table id = "resourceTbl" lay-filter="resourceTbl">
+</table>
+
+<script type="text/html" id="addResourceFormScript">
+  <form id="addResourceForm" class="layui-form" lay-filter="addResourceForm" style="margin-top: 20px">
+    <div class="layui-form-item">
+      <label class="layui-form-label">资源uri</label>
+      <div class="layui-input-inline">
+        <input id="uri" type="text" name="uri" required placeholder="请输入资源uri" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">资源名称</label>
+      <div class="layui-input-inline">
+        <input id="name" type="text" name="name" required placeholder="请输入资源名称" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+  </form>
+</script>
+
+<script type="text/html" id="resourceTblToolbar">
+  <div class="layui-btn-container">
+    <button class="layui-btn layui-btn-sm" lay-event="addResource">添加资源</button>
+  </div>
+</script>
+
+<script src="/exam/js/index.js" type="application/javascript"></script>
+<script src="/exam/layui/layui.js" type="application/javascript"></script>
+<script src="/exam/js/addResource.js" type="application/javascript"></script>
+</body>
+</html>
