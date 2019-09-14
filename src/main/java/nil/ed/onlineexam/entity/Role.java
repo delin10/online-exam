@@ -9,7 +9,7 @@ public class Role {
 
     private Long createTime;
 
-    private Long lastUpdateTime;
+    private Long updateTime;
 
     private Integer creator;
 
@@ -45,12 +45,12 @@ public class Role {
         this.createTime = createTime;
     }
 
-    public Long getLastUpdateTime() {
-        return lastUpdateTime;
+    public Long getUpdateTime() {
+        return updateTime;
     }
 
-    public void setLastUpdateTime(Long lastUpdateTime) {
-        this.lastUpdateTime = lastUpdateTime;
+    public void setUpdateTime(Long updateTime) {
+        this.updateTime = updateTime;
     }
 
     public Integer getCreator() {

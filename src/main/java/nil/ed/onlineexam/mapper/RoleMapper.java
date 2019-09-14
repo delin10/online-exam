@@ -21,4 +21,8 @@ public interface RoleMapper {
     Integer deleteRoleById(@Param("id" )Integer id);
 
     Integer updateRole(@Param("role") Role role);
+
+    Integer deleteResourceOfRole(@Param("roleId") Integer roleId, @Param("resourceId") Integer resourceId);
+
+    Integer addResourceOfRole(@Param("roleId") Integer roleId, @Param("resourceId") Integer resourceId, @Param("creator") Integer creator);
 }

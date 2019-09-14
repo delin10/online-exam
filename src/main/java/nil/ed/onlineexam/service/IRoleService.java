@@ -4,6 +4,9 @@ import nil.ed.onlineexam.common.PageResult;
 import nil.ed.onlineexam.common.Response;
 import nil.ed.onlineexam.entity.Role;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * 角色管理
  */
@@ -38,4 +41,13 @@ public interface IRoleService {
      * @return
      */
     Response<PageResult<Role>> listRolesByPage(Integer pageNo, Integer pageSize);
+
+    /**
+     * 修改角色权限
+     * @param roleId 角色id
+     * @param resources 权限
+     * @param operator 操作人
+     * @return 结果信息
+     */
+    Response<Void> authResources(Integer roleId, Set<Integer> resources, Integer operator);
 }
