@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>查看课程</title>
+  <link rel="stylesheet" href="/exam/layui/css/layui.css">
+</head>
+<body>
+  <table id="showCourses" lay-filter="showCourses">
+
+  </table>
+  <script type="text/html" id="opToolBar">
+    <a class="layui-btn layui-btn-xs" lay-event="{{ courseStatusMapper(d)['opId'] }}">{{ courseStatusMapper(d)['opTitle'] }}</a>
+  </script>
+  <script src="/exam/layui/layui.js" type="application/javascript"></script>
+  <script src="/exam/js/index.js" type="application/javascript"></script>
+  <script src="/exam/js/openShowCourse.js" type="application/javascript"></script>
+</body>
+</html>
