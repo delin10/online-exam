@@ -1,6 +1,7 @@
 package nil.ed.onlineexam.controller.handler;
 
 
+import nil.ed.onlineexam.aop.annotation.MethodInvokeLog;
 import nil.ed.onlineexam.common.NormalResponseBuilder;
 import nil.ed.onlineexam.common.Response;
 import nil.ed.onlineexam.common.ResponseCodeEnum;
@@ -19,11 +20,11 @@ import java.text.MessageFormat;
 @ControllerAdvice
 public class ControllerExceptionHandler {
     // 声明要捕获的异常
+    @MethodInvokeLog
     @ExceptionHandler(Exception.class)
     @ResponseBody
-    public Response<String> defultExceptionHandler(HttpServletRequest request, HttpServletResponse response, Exception e) {
-        e.printStackTrace();
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    public Response<String> defaultExceptionHandler(HttpServletRequest request, HttpServletResponse response, Exception e) {
+        response.setStatus(HttpServletResponse.SC_OK);
         return new NormalResponseBuilder<String>()
                 .setCodeEnum(ResponseCodeEnum.UNCAUGHT_EXCEPTION)
                 .setData(e.getMessage())
