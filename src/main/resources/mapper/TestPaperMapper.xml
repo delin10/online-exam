@@ -150,6 +150,9 @@
             <if test="cid != null">
                 and `ttp`.`cid` = #{cid}
             </if>
+            <if test="pid != null">
+                and `ttp`.`id` = #{pid}
+            </if>
         </where>
         order by `ttp`.`start_time`
         limit #{pageStart},#{pageSize};
@@ -175,4 +178,48 @@
     left join `t_joined_course` on `t_test_paper`.`cid` = `t_joined_course`.`cid`
     where `t_joined_course`.`uid` = #{uid} and `t_test_paper`.`id` = #{tid} and `t_test_paper`.`published` = 1;
   </select>
+    
+    <insert id="addSubmittedAnswerList" parameterType="nil.ed.onlineexam.entity.SubmittedAnswer">
+        insert into `t_submitted_answer`(`id`,
+                                         `uid`,
+                                         `pid`,
+                                         `qid`,
+                                         `answer`,
+                                         `score`,
+                                         `create_time`)
+        values
+        <foreach collection="submittedAnswerList" item="e" separator=",">
+           (NULL,
+            #{e.uid},
+            #{e.pid},
+            #{e.qid},
+            #{e.answer},
+            #{e.score},
+            unix_timestamp(current_timestamp(3))*1000)
+        </foreach>
+    </insert>
+
+    <select id="listTestPaperQuestionsWithAnswer" resultType="nil.ed.onlineexam.vo.QuestionWithAnswerVO">
+        select `t_question`.`id` as `id`,
+               `t_question`.`type` as `type`,
+               `t_question`.`content` as `content`,
+               `t_question`.`options` as `options`,
+               `t_question`.`answer` as `answer`,
+               `t_test_paper_content_item`.`score` as `score`
+        from `t_test_paper_content_item`
+        left join `t_question` on `t_test_paper_content_item`.`qid` = `t_question`.`id`
+        where `t_test_paper_content_item`.`pid` = #{pid}
+    </select>
+
+    <select id="listSubmittedAnswers" resultType="nil.ed.onlineexam.entity.SubmittedAnswer">
+        select `t`.`id` as `id`,
+               `t`.`uid` as `uid`,
+               `t`.`qid` as `qid`,
+               `t`.`pid` as `pid`,
+               `t`.`score` as `score`,
+               `t`.`create_time` as `createTime`,
+               `t`.`answer` as `answer`
+        from `t_submitted_answer` t
+        where `t`.`uid` = #{uid} and `t`.`pid` = #{pid}
+    </select>
 </mapper>

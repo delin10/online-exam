@@ -15,11 +15,15 @@ public class TestPaperServiceGetter {
         return getArrayList(jsonObject, "subjectives");
     }
 
-    public static Integer getScore(JSONObject jsonObject){
-        return jsonObject.getInteger("score");
+    public static Short getScore(JSONObject jsonObject){
+        return jsonObject.getShort("score");
     }
 
     public static List<LinkedHashMap<String,Object>> getArrayList(JSONObject jsonObject, String key){
         return jsonObject.getObject(key, ArrayList.class);
+    }
+
+    public static Integer getQid(JSONObject jsonObject){
+        return jsonObject.getInteger("qid");
     }
 }

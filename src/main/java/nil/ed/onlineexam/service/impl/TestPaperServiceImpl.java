@@ -1,19 +1,14 @@
 package nil.ed.onlineexam.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import nil.ed.onlineexam.aop.annotation.MethodInvokeLog;
 import nil.ed.onlineexam.common.*;
 import nil.ed.onlineexam.common.enumm.QuestionTypeEnum;
 import nil.ed.onlineexam.common.enumm.TestPaperStatusEnum;
 import nil.ed.onlineexam.delagate.CourseServiceDelegate;
-import nil.ed.onlineexam.entity.JoinedTest;
-import nil.ed.onlineexam.entity.Question;
-import nil.ed.onlineexam.entity.TestPaper;
-import nil.ed.onlineexam.entity.TestPaperContentItem;
-import nil.ed.onlineexam.mapper.JoinedTestMapper;
-import nil.ed.onlineexam.mapper.QuestionMapper;
-import nil.ed.onlineexam.mapper.TestPaperContentItemMapper;
-import nil.ed.onlineexam.mapper.TestPaperMapper;
+import nil.ed.onlineexam.entity.*;
+import nil.ed.onlineexam.mapper.*;
 import nil.ed.onlineexam.service.ITestPaperService;
 import nil.ed.onlineexam.service.getter.TestPaperServiceGetter;
 import nil.ed.onlineexam.service.support.impl.SimpleInsertHelper;
@@ -22,9 +17,7 @@ import nil.ed.onlineexam.service.support.impl.SimpleSelectPageHelper;
 import nil.ed.onlineexam.service.support.impl.SimpleUpdateHelper;
 import nil.ed.onlineexam.util.PageUtils;
 import nil.ed.onlineexam.util.ReflectionAsmUtils;
-import nil.ed.onlineexam.vo.BaseTestPaperVO;
-import nil.ed.onlineexam.vo.TestPaperWithQuestionsVO;
-import nil.ed.onlineexam.vo.UserTestVO;
+import nil.ed.onlineexam.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DuplicateKeyException;
@@ -39,6 +32,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service("testPaperService")
@@ -57,6 +51,9 @@ public class TestPaperServiceImpl implements ITestPaperService {
 
     @Resource
     private TestPaperContentItemMapper testPaperContentItemMapper;
+
+    @Resource
+    private SubmittedAnswerMapper submittedAnswerMapper;
 
     @Resource
     private JoinedTestMapper joinedTestMapper;
@@ -161,14 +158,231 @@ public class TestPaperServiceImpl implements ITestPaperService {
     }
 
     @Override
-    public Response<PageResult<UserTestVO>> listCanJoinOrHaveJoinedTests(Integer uid) {
+    public Response<PageResult<UserTestVO>> listCanJoinOrHaveJoinedTests(Integer uid, Integer cid) {
         int pageNo = 0;
         int pageSize = 20;
+        long currentTimeMilli = Instant.now().toEpochMilli();
         return new SimpleSelectPageHelper<UserTestVO>(executor)
                 .setPageNo(pageNo)
                 .setPageSize(pageSize)
                 .setCounter(() -> testPaperMapper.countUserTestsOf(uid, null))
-                .operate(() -> testPaperMapper.listUserTestsOf(uid, null, PageUtils.calPageStart(pageNo, pageSize), pageSize));
+                .operate(() -> {
+                    List<UserTestVO> testVOList = testPaperMapper.listUserTestsOf(uid, cid, null, PageUtils.calPageStart(pageNo, pageSize), pageSize);
+
+                    testVOList.parallelStream().forEach(test -> {
+                        /**
+                         * 没参加考试而且考试已经截止
+                         */
+                        if ((test.getJoinTime() == null || test.getJoinTime() == 1) && test.getEndTime() > currentTimeMilli){
+                            test.setTotalScore((short)0);
+                            return;
+                        }
+
+                        test.setTotalScore(getTotalScore(uid,test.getId()));
+                    });
+
+                    return testVOList;
+                });
+    }
+
+    @Override
+    public Response<Void> submitAnswer(List<SubmittedAnswer> answerList, Integer pid, Integer userId) {
+
+
+        answerList.parallelStream().forEach(submittedAnswer -> processSubmittedAnswer(submittedAnswer, pid, userId));
+
+        addSubmittedAnswerListWithTransactional(answerList);
+
+        return new NormalResponseBuilder<Void>()
+                .setCodeEnum(ResponseCodeEnum.SUCCESS)
+                .build();
+    }
+
+    @Override
+    public Response<TestPaperWithQuestionWithSubmittedAnswerVO> getTestPaperWithQuestionWithSubmittedAnswerVO(Integer pid, Integer uid) {
+        return new SimpleSelectOneHelper<TestPaperWithQuestionWithSubmittedAnswerVO>()
+                .operate(() -> {
+                    List<UserTestVO> userTestVOList = testPaperMapper.listUserTestsOf(uid,null, pid,0,1);
+                    if (userTestVOList.isEmpty()){
+                        throw new IllegalArgumentException("用户id下无该考试");
+                    }
+
+                    Long joinTime = userTestVOList.get(0).getJoinTime();
+                    if (joinTime == null || joinTime <= 1){
+                        throw new IllegalArgumentException("该用户未参加此考试");
+                    }
+
+                    List<QuestionWithAnswerVO> questionWithAnswerVOList = testPaperMapper.listTestPaperQuestionsWithAnswer(pid);
+
+
+                    List<SubmittedAnswer> submittedAnswerList = testPaperMapper.listSubmittedAnswers(uid, pid);
+
+                    if (submittedAnswerList == null || submittedAnswerList.isEmpty()){
+                        return null;
+                    }
+
+                    return mapToTestPaperWithQuestionWithSubmittedAnswerVO(userTestVOList.get(0), questionWithAnswerVOList, submittedAnswerList);
+                });
+    }
+
+    @Override
+    public Response<Short> markTestPaper(Integer pid, Integer uid,Integer updater, JSONArray jsonArray) {
+        TestPaperWithQuestionsVO testPaperWithQuestionsVO = testPaperMapper.getTestPaperById(pid);
+
+        if (testPaperWithQuestionsVO == null){
+            throw new IllegalArgumentException("pid不合法");
+        }
+
+        Map<Integer, List<TestPaperQuestionVO>> questionMap = testPaperWithQuestionsVO.getQuestions().stream()
+                .collect(Collectors.groupingBy(QuestionVO::getId));
+        jsonArray.parallelStream()
+                .map(obj -> (LinkedHashMap)obj)
+                .forEach(obj -> {
+                    try{
+                        Integer qid = Integer.valueOf(String.valueOf(obj.get("qid")));
+                        Short score = Short.valueOf(String.valueOf(obj.get("score")));
+
+                        List<TestPaperQuestionVO> questionVO = questionMap.get(qid);
+                        if (questionVO != null && score >= 0 && score <= questionVO.get(0).getScore()) {
+                            submittedAnswerMapper.updateSubjectiveQuestionScore(uid, pid, qid, score, updater);
+                        }
+                    }catch (NumberFormatException e){ /* ignore */}
+                });
+        return new NormalResponseBuilder<Short>()
+                .setCodeEnum(ResponseCodeEnum.SUCCESS)
+                .setData(getTotalScore(uid, pid))
+                .build();
+    }
+
+    private TestPaperWithQuestionWithSubmittedAnswerVO mapToTestPaperWithQuestionWithSubmittedAnswerVO(UserTestVO userTestVO,
+                                                                                                       List<QuestionWithAnswerVO> testPaperWithQuestionsVO,
+                                                                                                       List<SubmittedAnswer> submittedAnswerList){
+        Map<Integer,List<SubmittedAnswer>> submittedAnswerMap = submittedAnswerList.stream().collect(Collectors.groupingBy(SubmittedAnswer::getQid));
+
+        TestPaperWithQuestionWithSubmittedAnswerVO testPaper = new TestPaperWithQuestionWithSubmittedAnswerVO();
+        testPaper.setId(userTestVO.getId());
+        testPaper.setCid(userTestVO.getCid());
+        testPaper.setCourseName(userTestVO.getCourseName());
+        testPaper.setName(userTestVO.getName());
+        testPaper.setStartTime(userTestVO.getStartTime());
+        testPaper.setEndTime(userTestVO.getEndTime());
+        testPaper.setTestDuration(userTestVO.getTestDuration());
+        testPaper.setScore(userTestVO.getScore());
+
+        List<QuestionWithSubmittedAnswerVO> questionWithSubmittedAnswerVOList = new LinkedList<>();
+        testPaperWithQuestionsVO.forEach(question -> {
+            QuestionWithSubmittedAnswerVO questionWithSubmittedAnswerVO = new QuestionWithSubmittedAnswerVO();
+
+            questionWithSubmittedAnswerVO.setId(question.getId());
+            questionWithSubmittedAnswerVO.setType(question.getType());
+            questionWithSubmittedAnswerVO.setContent(question.getContent());
+            questionWithSubmittedAnswerVO.setAnswer(question.getAnswer());
+            questionWithSubmittedAnswerVO.setOptions(question.getOptions());
+            questionWithSubmittedAnswerVO.setScore(question.getScore());
+            List<SubmittedAnswer> submittedAnswers = submittedAnswerMap.get(question.getId());
+
+            SubmittedAnswer submittedAnswer = Optional.of(submittedAnswers)
+                    .map(submittedAnswerLs -> submittedAnswerLs.get(0))
+                    .orElse(null);
+
+
+            questionWithSubmittedAnswerVO.setSubmittedAnswer(Optional.ofNullable(submittedAnswer)
+                    .map(SubmittedAnswer::getAnswer).orElse(""));
+            questionWithSubmittedAnswerVO.setGainScore(Optional.ofNullable(submittedAnswer)
+                    .map(SubmittedAnswer::getScore).orElse((short)0));
+
+            questionWithSubmittedAnswerVOList.add(questionWithSubmittedAnswerVO);
+        });
+
+        testPaper.setQuestions(questionWithSubmittedAnswerVOList);
+        return testPaper;
+    }
+
+    private Short getTotalScore(Integer uid, Integer pid){
+        List<SubmittedAnswer> answerList = testPaperMapper.listSubmittedAnswers(uid, pid);
+
+        boolean notYetMark = answerList.stream()
+                .anyMatch(submittedAnswer -> submittedAnswer.getScore() < 0);
+
+        if (!notYetMark){
+            return (short) answerList.stream().mapToInt(SubmittedAnswer::getScore).sum();
+        }
+
+        return -1;
+    }
+
+    /**
+     * 包裹在事务内的数据库插入
+     * @param submittedAnswerList 答案列表
+     * @return 插入条数
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public Integer addSubmittedAnswerListWithTransactional(List<SubmittedAnswer> submittedAnswerList){
+
+        return testPaperMapper.addSubmittedAnswerList(submittedAnswerList);
+    }
+
+    private void checkSingleSubmittedAnswer(SubmittedAnswer submittedAnswer){
+        if (submittedAnswer.getQid() == null){
+            throw new IllegalArgumentException("无题目标识");
+        }
+    }
+
+    /**
+     * 处理提交的答案
+     * @param submittedAnswer 提交的答案
+     * @param pid 试卷id
+     * @param userId 用户id
+     */
+    private void processSubmittedAnswer(SubmittedAnswer submittedAnswer, Integer pid, Integer userId){
+        Long currentTimeMilli = Instant.now().toEpochMilli();
+        Short initialScore = -1;
+        Integer pageNo = 0, pageSize = Integer.MAX_VALUE;
+
+        List<UserTestVO> testPaper = testPaperMapper.listUserTestsOf(userId, null, pid, PageUtils.calPageStart(pageNo, pageSize), pageSize);
+
+        if (testPaper == null || testPaper.isEmpty()){
+            throw new IllegalArgumentException("考试场次不合法");
+        }
+
+        UserTestVO userTestVO = testPaper.get(0);
+        if (userTestVO.getEndTime() > currentTimeMilli){
+            throw new IllegalArgumentException("考试已过期");
+        }
+
+        if (userTestVO.getJoinTime() + userTestVO.getTestDuration() * 60 * 1000 < currentTimeMilli){
+            throw new IllegalArgumentException("不能在考试时间过后提交答案！");
+        }
+
+        List<QuestionWithAnswerVO> questionWithAnswerVOList = testPaperMapper.listTestPaperQuestionsWithAnswer(pid);
+        Map<Integer, List<QuestionWithAnswerVO>> questionVOMap = questionWithAnswerVOList.stream()
+                .collect(Collectors.groupingBy(QuestionWithAnswerVO::getId));
+
+        checkSingleSubmittedAnswer(submittedAnswer);
+
+        submittedAnswer.setCreateTime(currentTimeMilli);
+        submittedAnswer.setId(null);
+        submittedAnswer.setScore(initialScore);
+        submittedAnswer.setUid(userId);
+        submittedAnswer.setPid(pid);
+        /**
+         * 处理选择题分数
+         */
+        List<QuestionWithAnswerVO> questionVOList = questionVOMap.get(submittedAnswer.getQid());
+
+        if (questionVOList == null){
+            throw new IllegalArgumentException("存在非法题目,id="+submittedAnswer.getQid());
+        }
+
+        QuestionWithAnswerVO questionWithAnswerVO = questionVOList.get(0);
+
+        if (questionWithAnswerVO.getType() == QuestionTypeEnum.OPTION.getCode()){
+            if (questionWithAnswerVO.getAnswer().equals(submittedAnswer.getAnswer())) {
+                submittedAnswer.setScore(questionWithAnswerVO.getScore());
+            }else{
+                submittedAnswer.setScore((short)0);
+            }
+        }
     }
 
     /**
@@ -279,10 +493,10 @@ public class TestPaperServiceImpl implements ITestPaperService {
     public static void main(String[] args) {
         TestPaperServiceImpl testPaperService = new TestPaperServiceImpl();
 
-        JSONObject ls = JSONObject.parseObject("{\"score\":\"100\",\"startTime\":1568044800000,\"endTime\":1568131200000,\"testDuration\":\"60\",\"options\":[{\"qid\":99,\"score\":\"25\"},{\"qid\":244,\"score\":\"25\"}],\"subjectives\":[{\"qid\":99,\"score\":\"25\"},{\"qid\":244,\"score\":\"25\"}]}");
-        System.out.println(
-
-        );
+        JSONArray ls = JSONArray.parseArray("[{\"qid\":1}]");
+        ls.forEach(e -> {
+            System.out.println(e.getClass());
+        });
 
     }
 }

@@ -74,4 +74,9 @@ public class TestPaperServiceImplTest extends AbstractServiceTest {
     public void joinTest() {
         testPaperService.joinTest(2,2);
     }
+
+    @Test
+    public void getTestPaperWithQuestionWithSubmittedAnswerVO() {
+        printAsJsonString(testPaperService.getTestPaperWithQuestionWithSubmittedAnswerVO(2,2));
+    }
 }

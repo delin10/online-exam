@@ -11,7 +11,7 @@ public class SubmittedAnswer {
 
     private String answer;
 
-    private Integer score;
+    private Short score;
 
     private Long createTime;
 
@@ -55,11 +55,11 @@ public class SubmittedAnswer {
         this.answer = answer;
     }
 
-    public Integer getScore() {
+    public Short getScore() {
         return score;
     }
 
-    public void setScore(Integer score) {
+    public void setScore(Short score) {
         this.score = score;
     }
 
