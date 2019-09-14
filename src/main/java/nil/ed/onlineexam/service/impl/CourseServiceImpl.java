@@ -16,6 +16,7 @@ import nil.ed.onlineexam.service.support.impl.SimpleSelectPageHelper;
 import nil.ed.onlineexam.util.PageUtils;
 import nil.ed.onlineexam.vo.BaseTestPaperVO;
 import nil.ed.onlineexam.vo.CourseVO;
+import nil.ed.onlineexam.vo.CourseWithStudentsVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DuplicateKeyException;
@@ -109,6 +110,38 @@ public class CourseServiceImpl implements ICourseService {
                 .setPageSize(pageSize)
                 .setCounter(() -> courseMapper.countJoinedCourses(uid))
                 .operate(() -> courseMapper.listJoinedCourses(uid, PageUtils.calPageStart(pageNo, pageSize), pageSize));
+    }
+
+    @Override
+    public Response<PageResult<CourseVO>> listCourses() {
+        int pageNo = 0;
+        int pageSize = Integer.MAX_VALUE;
+        return new SimpleSelectPageHelper<CourseVO>(executor)
+                .setPageNo(pageNo)
+                .setPageSize(pageSize)
+                .setCounter(() -> courseMapper.countCourses())
+                .operate(()  -> courseMapper.listCourses(null, PageUtils.calPageStart(pageNo, pageSize), pageSize));
+    }
+
+    @Override
+    public Response<PageResult<CourseVO>> listCoursesOfTeacher(Integer teacher) {
+        int pageNo = 0;
+        int pageSize = Integer.MAX_VALUE;
+        return new SimpleSelectPageHelper<CourseVO>(executor)
+                .setPageNo(pageNo)
+                .setPageSize(pageSize)
+                .setCounter(() -> courseMapper.countCoursesIfUser(teacher))
+                .operate(()  -> courseMapper.listCourses(teacher, PageUtils.calPageStart(pageNo, pageSize), pageSize));
+    }
+
+    @Override
+    public Response<PageResult<CourseWithStudentsVO>> listCourseWithStudentsVOs(Integer cid, Integer currentUser) {
+        Integer pageNo = 0, pageSize = Integer.MAX_VALUE;
+        return new SimpleSelectPageHelper<CourseWithStudentsVO>(executor)
+                .setPageNo(pageNo)
+                .setPageSize(pageSize)
+                .setCounter(() -> courseMapper.countCourses())
+                .operate(() -> courseMapper.listCourseWithStudents(cid, currentUser, PageUtils.calPageStart(pageNo, pageSize), pageSize));
     }
 
     /**

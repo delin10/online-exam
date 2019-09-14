@@ -5,6 +5,7 @@ import nil.ed.onlineexam.common.Response;
 import nil.ed.onlineexam.entity.Course;
 import nil.ed.onlineexam.vo.BaseTestPaperVO;
 import nil.ed.onlineexam.vo.CourseVO;
+import nil.ed.onlineexam.vo.CourseWithStudentsVO;
 import nil.ed.onlineexam.vo.TestPaperWithQuestionsVO;
 
 /**
@@ -47,5 +48,24 @@ public interface ICourseService {
      * @return 课程信息
      */
     Response<PageResult<CourseVO>> listJoinedCourses(Integer uid);
+
+    /**
+     * 查看所有课程
+     * @return 所有课程信息
+     */
+    Response<PageResult<CourseVO>> listCourses();
+
+    /**
+     * 查看某个老师所有课程
+     * @return 所有课程信息
+     */
+    Response<PageResult<CourseVO>> listCoursesOfTeacher(Integer teacher);
+
+    /**
+     * 查看课程以及学生信息
+     *
+     * @return 所有参与课程的学生信息
+     */
+    Response<PageResult<CourseWithStudentsVO>> listCourseWithStudentsVOs(Integer cid, Integer currentUser);
 
 }
