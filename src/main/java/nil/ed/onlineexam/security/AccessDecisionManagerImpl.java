@@ -73,6 +73,7 @@ public class AccessDecisionManagerImpl implements AccessDecisionManager {
             throw new AccessDeniedException("not login");
         }
         request.getHttpRequest().setAttribute("user", details);
+        request.getHttpRequest().setAttribute("userId", Integer.valueOf(details.getUsername()));
     }
 
     @Override
