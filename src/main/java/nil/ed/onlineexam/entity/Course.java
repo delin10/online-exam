@@ -10,7 +10,7 @@ public class Course {
     /*
     课程id
      */
-    private int id;
+    private Integer id;
 
    /*
    课程名称
@@ -20,27 +20,27 @@ public class Course {
     /*
     老师id
      */
-    private int teacher;
+    private Integer teacher;
 
     /*
     课程创建时间
      */
-    private long createTime;
+    private Long createTime;
 
     /*
     课程更新时间
      */
-    private long updateTime;
+    private Long updateTime;
 
     /*
     课程开始时间
      */
-    private long startTime;
+    private Long startTime;
 
     /*
     课程结束时间
      */
-    private long endTime;
+    private Long endTime;
 
     /*
     课程状态

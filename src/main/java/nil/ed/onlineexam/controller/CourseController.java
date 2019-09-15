@@ -2,6 +2,7 @@ package nil.ed.onlineexam.controller;
 
 import nil.ed.onlineexam.common.PageResult;
 import nil.ed.onlineexam.common.Response;
+import nil.ed.onlineexam.entity.Course;
 import nil.ed.onlineexam.service.ICourseService;
 import nil.ed.onlineexam.vo.BaseTestPaperVO;
 import nil.ed.onlineexam.vo.CourseVO;
@@ -48,5 +49,11 @@ public class CourseController {
     public Response<PageResult<CourseWithStudentsVO>> listStudents(@RequestParam(value = "cid", required = false) Integer cid,
                                                                    @RequestAttribute("user") UserDetails user){
         return courseService.listCourseWithStudentsVOs(cid, Integer.valueOf(user.getUsername()));
+    }
+
+    @PostMapping(value = "/add")
+    public Response<Void> addCourse(@RequestBody Course course,
+                                    @RequestAttribute("userId") Integer currentUserId){
+        return courseService.addCourse(course, currentUserId);
     }
 }

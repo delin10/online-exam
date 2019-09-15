@@ -26,6 +26,7 @@ import javax.annotation.Resource;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 
 @Service("courseService")
 public class CourseServiceImpl implements ICourseService {
@@ -45,7 +46,8 @@ public class CourseServiceImpl implements ICourseService {
     }
 
     @Override
-    public Response addCourse(Course course, Integer creator) {
+    public Response<Void> addCourse(Course course, Integer creator) {
+        checkCourseRequired(course);
         setCreateFields(course, creator);
         return new SimpleInsertHelper()
                 .operate(() -> {
@@ -177,5 +179,19 @@ public class CourseServiceImpl implements ICourseService {
 
     private void setUpdateFields(Course course, Integer updater){
         course.setUpdateTime(Instant.now().toEpochMilli());
+    }
+
+    private void checkCourseRequired(Course course){
+        if (course.getStartTime() == null){
+            throw new IllegalArgumentException("无开始时间");
+        }
+
+        if (course.getEndTime() == null){
+            throw new IllegalArgumentException("无截止时间");
+        }
+
+        if (course.getName() == null){
+            throw new IllegalArgumentException("课程名称不能为空");
+        }
     }
 }
