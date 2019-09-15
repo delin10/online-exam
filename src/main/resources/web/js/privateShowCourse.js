@@ -1,17 +1,8 @@
-layui.use(["table"], ()=>{
+layui.use(["table","layer","laydate"], ()=>{
     let table = layui.table;
 
     renderCoursesTbl();
-
-    table.on("tool(showCourses)", obj=>{
-        let event = obj.event,
-            data = obj.data,
-            operation = opMapper[event];
-        if (operation){
-            operation(data);
-        }
-    })
-})
+});
 
 let courseColsMapper = [[
     {
@@ -79,9 +70,49 @@ function courseStatusMapper(d){
 
 function renderCoursesTbl(){
     layui.table.render({
-        elem: "#showCourses",
+        elem: "#courseTbl",
         url: "/exam/course/list/own",
         cols: courseColsMapper,
-        parseData: basePageMapper
-    })
+        parseData: basePageMapper,
+        toolbar: "#courseTblToolbar"
+    });
+
+    layui.table.on("tool(courseTbl)", obj=>{
+        let event = obj.event,
+            data = obj.data,
+            operation = opMapper[event];
+        if (operation){
+            operation(data);
+        }
+    });
+
+    layui.table.on("toolbar(courseTbl)", e => {
+        console.log(e);
+        if(e.event === "addCourse"){
+            openAddCourseForm();
+        }
+    });
+}
+
+function openAddCourseForm(){
+    layui.layer.open({
+        title: "添加资源",
+        type: 1,
+        content: layui.jquery("#addCourseFormScript")[0].innerHTML,
+        btn: ["提交","取消"],
+        success: (layro,index) =>{
+          renderLayDate("#startTime");
+          renderLayDate("#endTime");
+        },
+        yes: (index, layero) => {
+            let obj = getObjFromForm(layui.jquery, "addCourseForm");
+            obj.startTime = new Date(obj.startTime).getTime();
+            obj.endTime = new Date(obj.endTime).getTime();
+            postAndAlertMessage("/exam/course/add", obj, res =>{
+                responseProcessor.alertMessage(res);
+                renderCourseTbl();
+            });
+            layui.layer.close(layui.layer.index);
+        }
+    });
 }
