@@ -10,7 +10,9 @@ import nil.ed.onlineexam.service.support.impl.SimpleSelectOneHelper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service("permissionService")
 public class PermissionServiceImpl implements IPermissionService {
@@ -55,7 +57,18 @@ public class PermissionServiceImpl implements IPermissionService {
     @Override
     public Response<List<Permission>> listPermissionsOfRole(Integer roleId) {
         return new SimpleSelectOneHelper<List<Permission>>()
-                .operate(() -> roleId.equals(ADMIN) ? permissionMapper.listAllResources() : permissionMapper.listPermissionsOfRole(roleId));
+                .operate(() -> {
+                    if (roleId.equals(ADMIN)){
+                        return permissionMapper.listAllResources();
+                    }
+                    List<Permission> permissions = permissionMapper.listPermissionsOfRole(roleId);
+
+                    if (permissions.isEmpty() || permissions.get(0) == null){
+                        return Collections.emptyList();
+                    }
+
+                    return permissions;
+                });
     }
 
 
