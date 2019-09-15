@@ -6,6 +6,7 @@ import nil.ed.onlineexam.common.CommonVO;
 import nil.ed.onlineexam.common.PageResult;
 import nil.ed.onlineexam.common.Response;
 import nil.ed.onlineexam.entity.SubmittedAnswer;
+import nil.ed.onlineexam.entity.TestPaper;
 import nil.ed.onlineexam.service.ITestPaperService;
 import nil.ed.onlineexam.vo.ScoreStatisticVO;
 import nil.ed.onlineexam.vo.TestPaperWithQuestionWithSubmittedAnswerVO;
@@ -41,7 +42,7 @@ public class TestPaperController {
         return paperService.addTestPaper(testPaper, Integer.valueOf(user.getUsername()));
     }
 
-    @PostMapping(value="/joined/{tid}")
+    @PostMapping(value="/join/{tid}")
     public Response<Void> addTestPaper(@PathVariable("tid") Integer tid,
                                        @RequestAttribute("user") UserDetails user){
         return paperService.joinTest(tid, Integer.valueOf(user.getUsername()));
@@ -79,5 +80,16 @@ public class TestPaperController {
     public  Response<ScoreStatisticVO> showScore(@PathVariable("pid") Integer pid,
                                                  @RequestAttribute("user") UserDetails user){
         return paperService.showScore(pid, Integer.valueOf(user.getUsername()));
+    }
+
+    @GetMapping(value = "/list/ofOwn")
+    public Response<PageResult<TestPaper>> listOwnTestPaper(@RequestAttribute("userId") Integer userId){
+        return paperService.listOwnTestPaper(userId);
+    }
+
+    @PostMapping(value = "/publish/{pid}")
+    public Response<Void> publishTest(@PathVariable("pid") Integer pid,
+                                      @RequestAttribute("userId") Integer userId){
+        return paperService.publishedTest(pid, userId);
     }
 }

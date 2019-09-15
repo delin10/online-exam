@@ -222,4 +222,17 @@
         from `t_submitted_answer` t
         where `t`.`uid` = #{uid} and `t`.`pid` = #{pid}
     </select>
+
+    <select id="listOwnTestPapers" resultMap="BaseResultMap">
+        select `t_test_paper`.*
+        from `t_test_paper`
+        where `t_test_paper`.`creator` = #{uid}
+        limit #{pageStart},#{pageSize}
+    </select>
+
+    <select id="countOwnTestPapers" resultType="java.lang.Integer">
+        select count(*)
+        from `t_test_paper`
+        where `t_test_paper`.`creator` = #{uid}
+    </select>
 </mapper>

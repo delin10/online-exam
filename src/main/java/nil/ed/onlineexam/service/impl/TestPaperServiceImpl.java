@@ -188,9 +188,14 @@ public class TestPaperServiceImpl implements ITestPaperService {
 
     @Override
     public Response<Void> submitAnswer(List<SubmittedAnswer> answerList, Integer pid, Integer userId) {
+        checkTestValid(pid, userId);
 
 
-        answerList.parallelStream().forEach(submittedAnswer -> processSubmittedAnswer(submittedAnswer, pid, userId));
+        List<QuestionWithAnswerVO> questionWithAnswerVOList = testPaperMapper.listTestPaperQuestionsWithAnswer(pid);
+        Map<Integer, List<QuestionWithAnswerVO>> questionVOMap = questionWithAnswerVOList.stream()
+                .collect(Collectors.groupingBy(QuestionWithAnswerVO::getId));
+
+        answerList.parallelStream().forEach(submittedAnswer -> processSubmittedAnswer(submittedAnswer, questionVOMap, pid, userId));
 
         addSubmittedAnswerListWithTransactional(answerList);
 
@@ -246,6 +251,8 @@ public class TestPaperServiceImpl implements ITestPaperService {
                         List<TestPaperQuestionVO> questionVO = questionMap.get(qid);
                         if (questionVO != null && score >= 0 && score <= questionVO.get(0).getScore()) {
                             submittedAnswerMapper.updateSubjectiveQuestionScore(uid, pid, qid, score, updater);
+                        }else{
+                            throw new IllegalArgumentException("分数不能大于题目分数");
                         }
                     }catch (NumberFormatException e){ /* ignore */}
                 });
@@ -277,6 +284,16 @@ public class TestPaperServiceImpl implements ITestPaperService {
                 .setCodeEnum(ResponseCodeEnum.SUCCESS)
                 .setData(statistic(uid, pid))
                 .build();
+    }
+
+    @Override
+    public Response<PageResult<TestPaper>> listOwnTestPaper(Integer uid) {
+        Integer pageNo = 0, pageSize = Integer.MAX_VALUE;
+        return new SimpleSelectPageHelper<TestPaper>(executor)
+                .setPageNo(pageNo)
+                .setPageSize(pageSize)
+                .setCounter(() -> testPaperMapper.countOwnTestPapers(uid))
+                .operate(() -> testPaperMapper.listOwnTestPapers(uid, PageUtils.calPageStart(pageNo, pageSize), pageSize));
     }
 
     private TestPaperWithQuestionWithSubmittedAnswerVO mapToTestPaperWithQuestionWithSubmittedAnswerVO(UserTestVO userTestVO,
@@ -395,13 +412,36 @@ public class TestPaperServiceImpl implements ITestPaperService {
      */
     @Transactional(rollbackFor = Exception.class)
     public Integer addSubmittedAnswerListWithTransactional(List<SubmittedAnswer> submittedAnswerList){
-
-        return testPaperMapper.addSubmittedAnswerList(submittedAnswerList);
+        try {
+            return testPaperMapper.addSubmittedAnswerList(submittedAnswerList);
+        }catch (DuplicateKeyException e){
+            throw new DuplicateKeyException("不能重复提交试卷");
+        }
     }
 
     private void checkSingleSubmittedAnswer(SubmittedAnswer submittedAnswer){
         if (submittedAnswer.getQid() == null){
             throw new IllegalArgumentException("无题目标识");
+        }
+    }
+
+    private void checkTestValid(Integer pid, Integer uid){
+        Long currentTimeMilli = Instant.now().toEpochMilli();
+        Integer pageNo = 0, pageSize = Integer.MAX_VALUE;
+
+        List<UserTestVO> testPaper = testPaperMapper.listUserTestsOf(uid, null, pid, PageUtils.calPageStart(pageNo, pageSize), pageSize);
+
+        if (testPaper == null || testPaper.isEmpty()){
+            throw new IllegalArgumentException("考试场次不合法");
+        }
+
+        UserTestVO userTestVO = testPaper.get(0);
+        if (userTestVO.getEndTime() < currentTimeMilli){
+            throw new IllegalArgumentException("考试已过期");
+        }
+
+        if (userTestVO.getJoinTime() + userTestVO.getTestDuration() * 60 * 1000 < currentTimeMilli){
+            throw new IllegalArgumentException("不能在考试时间过后提交答案！");
         }
     }
 
@@ -411,29 +451,13 @@ public class TestPaperServiceImpl implements ITestPaperService {
      * @param pid 试卷id
      * @param userId 用户id
      */
-    private void processSubmittedAnswer(SubmittedAnswer submittedAnswer, Integer pid, Integer userId){
+    private void processSubmittedAnswer(SubmittedAnswer submittedAnswer,
+                                        Map<Integer, List<QuestionWithAnswerVO>> questionVOMap,
+                                        Integer pid,
+                                        Integer userId){
         Long currentTimeMilli = Instant.now().toEpochMilli();
         Short initialScore = -1;
-        Integer pageNo = 0, pageSize = Integer.MAX_VALUE;
 
-        List<UserTestVO> testPaper = testPaperMapper.listUserTestsOf(userId, null, pid, PageUtils.calPageStart(pageNo, pageSize), pageSize);
-
-        if (testPaper == null || testPaper.isEmpty()){
-            throw new IllegalArgumentException("考试场次不合法");
-        }
-
-        UserTestVO userTestVO = testPaper.get(0);
-        if (userTestVO.getEndTime() > currentTimeMilli){
-            throw new IllegalArgumentException("考试已过期");
-        }
-
-        if (userTestVO.getJoinTime() + userTestVO.getTestDuration() * 60 * 1000 < currentTimeMilli){
-            throw new IllegalArgumentException("不能在考试时间过后提交答案！");
-        }
-
-        List<QuestionWithAnswerVO> questionWithAnswerVOList = testPaperMapper.listTestPaperQuestionsWithAnswer(pid);
-        Map<Integer, List<QuestionWithAnswerVO>> questionVOMap = questionWithAnswerVOList.stream()
-                .collect(Collectors.groupingBy(QuestionWithAnswerVO::getId));
 
         checkSingleSubmittedAnswer(submittedAnswer);
 

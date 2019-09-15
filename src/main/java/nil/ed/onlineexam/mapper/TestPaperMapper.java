@@ -21,7 +21,7 @@ public interface TestPaperMapper {
 
     Integer updateTestPaper(@Param("testPaper") TestPaper testPaper);
 
-    Integer updatePublishedStatus(@Param("status") byte status, @Param("id") Integer pid, @Param("uid") Integer uid);
+    Integer updatePublishedStatus(@Param("status") byte status, @Param("pid") Integer pid, @Param("uid") Integer uid);
 
     List<BaseTestPaperVO> listPublishedTestPapersOf(@Param("uid") Integer uid, @Param("cid") Integer cid, @Param("pageStart") Integer pageStart, @Param("pageSize") Integer pageSize);
 
@@ -42,5 +42,13 @@ public interface TestPaperMapper {
     List<QuestionWithAnswerVO> listTestPaperQuestionsWithAnswer(@Param("pid") Integer pid);
 
     List<SubmittedAnswer> listSubmittedAnswers(Integer uid, Integer pid);
+
+    List<TestPaper> listOwnTestPapers(@Param("uid") Integer uid,
+                                      @Param("pageStart") Integer pageStart,
+                                      @Param("pageSize") Integer pageSize);
+
+    Integer countOwnTestPapers(@Param("uid") Integer uid);
+
+
 
 }
