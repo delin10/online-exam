@@ -157,6 +157,9 @@ create table `t_submitted_answer`(
     key (qid)
 )engine=innodb default character set utf8mb4;
 
+alter table `t_submitted_answer` add unique key t_submitted_answer_unique_key_uid__pid_qid(`pid`,`uid`,`qid`);
+
+
 create table `t_test_paper_content_item`(
     `id` int unsigned auto_increment not null comment '记录id',
     `pid` int unsigned not null comment '试卷id',
