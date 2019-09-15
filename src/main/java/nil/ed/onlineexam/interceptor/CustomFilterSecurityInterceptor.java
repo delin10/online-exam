@@ -11,6 +11,7 @@ import org.springframework.security.web.FilterInvocation;
 
 import javax.servlet.*;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 
 @Slf4j
 public class CustomFilterSecurityInterceptor extends AbstractSecurityInterceptor implements Filter {
