@@ -82,12 +82,13 @@ function postAndAlertMessage(url, data, callback) {
     config.contentType = "application/json";
     config.statusCode = {
         200: callback || responseProcessor.alertMessage,
+        403: callback || responseProcessor.alertMessage,
         500: callback || responseProcessor.alertMessage
     }
     $.post(config);
 }
 var responseProcessor= {
-    alertMessage: res => alert(res.message),
+    alertMessage: res => alert(res.message + (res.data ? "载荷为:"+res.data : "")),
     printResponse: res => console.log(res)
 }
 
