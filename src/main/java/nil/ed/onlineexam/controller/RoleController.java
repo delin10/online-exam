@@ -34,4 +34,10 @@ public class RoleController {
                 authRoleResourceVO.getResources(),
                 Integer.valueOf(user.getUsername()));
     }
+
+    @PostMapping(value = "/add")
+    public Response<Void> addRole(@RequestBody Role role,
+                                  @RequestAttribute("user") UserDetails user){
+        return roleService.addRole(role, Integer.valueOf(user.getUsername()));
+    }
 }

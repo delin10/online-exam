@@ -12,8 +12,8 @@
   <insert id="insert" parameterType="nil.ed.onlineexam.entity.Role" useGeneratedKeys="true">
     insert into t_role (`id`, `name`, `desc`,
       `create_time`, `update_time`, `creator`)
-    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, #{creator,jdbcType=INTEGER}
+    values (NULL, #{name,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR},
+            unix_timestamp(current_timestamp(3))*1000, unix_timestamp(current_timestamp(3))*1000, #{creator,jdbcType=INTEGER}
       )
   </insert>
   <insert id="insertSelective" parameterType="nil.ed.onlineexam.entity.Role">

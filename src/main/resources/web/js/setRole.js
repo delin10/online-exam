@@ -9,7 +9,15 @@ let renderRoleTbl = () => {
         elem: "#roleTbl",
         url: "/exam/role/list",
         cols: roleColMapper,
-        parseData: basePageMapper
+        parseData: basePageMapper,
+        toolbar: "#roleTblToolbar"
+    });
+
+    layui.table.on("toolbar(roleTbl)", e => {
+        console.log(e);
+        if(e.event === "addRole"){
+            openAddRoleForm();
+        }
     });
 
     layui.table.on("tool(roleTbl)", obj=>{
@@ -74,6 +82,23 @@ let renderRoleTbl = () => {
         }
     })
 };
+
+function openAddRoleForm(){
+    layui.layer.open({
+        title: "添加资源",
+        type: 1,
+        content: layui.jquery("#addRoleFormScript")[0].innerHTML,
+        btn: ["提交","取消"],
+        yes: (index, layero) => {
+            let obj = getObjFromForm(layui.jquery, "addRoleForm");
+            postAndAlertMessage("/exam/role/add", obj, res =>{
+                responseProcessor.alertMessage(res);
+                renderRoleTbl();
+            });
+            layui.layer.close(layui.layer.index);
+        }
+    });
+}
 
 let roleColMapper = [[
     {

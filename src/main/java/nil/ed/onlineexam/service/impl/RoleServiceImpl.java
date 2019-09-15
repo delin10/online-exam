@@ -1,5 +1,6 @@
 package nil.ed.onlineexam.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import nil.ed.onlineexam.aop.annotation.MethodInvokeLog;
 import nil.ed.onlineexam.common.NormalResponseBuilder;
 import nil.ed.onlineexam.common.PageResult;
@@ -100,6 +101,12 @@ public class RoleServiceImpl implements IRoleService {
     @MethodInvokeLog
     @Transactional(rollbackFor = Exception.class)
     public Response<Void> authResources(Integer roleId, Set<Integer> resources, Integer creator) {
+        if (resources == null || resources.isEmpty()) {
+            return new NormalResponseBuilder<Void>()
+                    .setCodeEnum(ResponseCodeEnum.SUCCESS)
+                    .build();
+        }
+
         if (Objects.isNull(permissionMapper.checkIdList(resources))){
             return new NormalResponseBuilder<Void>()
                     .setCodeEnum(ResponseCodeEnum.NOT_FOUND)
@@ -113,12 +120,19 @@ public class RoleServiceImpl implements IRoleService {
                     .build();
         }
 
+        /**
+         * 返回带null的非空集合！！！！！！！！！！！！！！！！！！！！
+         */
         List<Permission> permissionsOfRole = permissionMapper.listPermissionsOfRole(roleId);
+        if (permissionsOfRole.isEmpty() || permissionsOfRole.get(0) == null){
+            permissionsOfRole = new LinkedList<>();
+        }
         List<Integer> deletedList = new LinkedList<>();
+        System.out.println(JSON.toJSONString(permissionsOfRole));
 
         permissionsOfRole.parallelStream()
                 .map(Permission::getId)
-                .forEach(r -> {
+                 .forEach(r -> {
                     if (resources.contains(r)){
                         resources.remove(r);
                     }else{
