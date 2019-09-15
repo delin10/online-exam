@@ -22,6 +22,9 @@ let opMapper = {
    "noOp": data=>{},
    "joinTest": data => {
       joinTest(data.id);
+   },
+   "goTest": data => {
+      window.location.href=host + "/test/showTestPaper.html?pid="+data.id
    }
 };
 
@@ -81,32 +84,35 @@ function joinStatusMapper(d) {
    return d.joinTime && d.joinTime > 0 ? d.joinTime : "--";
 }
 
-function operationEventIdMapper(d) {
+function operationMapper(d) {
    console.log("operationMapper ==> ", d);
    let currentTime = new Date().getTime();
+
    if (d.joinTime && d.joinTime > 0){
-      return "showScore";
+      if (d.joinTime + d.testDuration * 60 * 1000 > new Date().getTime()){
+         return {
+            opId: "goTest",
+            opTitle: "去考试"
+         }
+      }
+
+      return {
+         opId: "showScore",
+         opTitle: "查看成绩",
+      };
    }
 
    if (d.startTime > currentTime || d.endTime < currentTime){
-      return "noOp";
+      return {
+         opId: "noOp",
+         opTitle: "无操作"
+      };
    }
 
-   return "joinTest";
-}
-
-function operationTitleMapper(d) {
-   console.log("operationMapper ==> ", d);
-   let currentTime = new Date().getTime();
-   if (d.joinTime && d.joinTime > 0){
-      return "查看成绩";
-   }
-
-   if (d.startTime > currentTime || d.endTime < currentTime){
-      return "无操作";
-   }
-
-   return "参加考试";
+   return {
+      opId: "joinTest",
+      opTitle: "参加考试"
+   };
 }
 
 function joinTest(tid){
