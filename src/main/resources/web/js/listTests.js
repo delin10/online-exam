@@ -1,6 +1,23 @@
 let opMapper = {
    "showScore": data => {
-      console.log(data);
+      layui.jquery.get({
+         url: "/exam/testPaper/showScore/"+data.id,
+         dataType: "json",
+         statusCode: {
+            200: res => {
+               if (res.code == 0){
+                  let statistic = res.data;
+                  if (statistic.totalScore < 0){
+                     alert("未批改");
+                     return;
+                  }
+                  alert("选择题分数:"+statistic.optionScore+"\n主观题分数:"+statistic.subjectiveScore+"\n总分:"+statistic.totalScore);
+               } else {
+                  alert(res.message);
+               }
+            }
+         }
+      });
    },
    "noOp": data=>{},
    "joinTest": data => {

@@ -7,6 +7,7 @@ import nil.ed.onlineexam.common.PageResult;
 import nil.ed.onlineexam.common.Response;
 import nil.ed.onlineexam.entity.SubmittedAnswer;
 import nil.ed.onlineexam.service.ITestPaperService;
+import nil.ed.onlineexam.vo.ScoreStatisticVO;
 import nil.ed.onlineexam.vo.TestPaperWithQuestionWithSubmittedAnswerVO;
 import nil.ed.onlineexam.vo.TestPaperWithQuestionsVO;
 import nil.ed.onlineexam.vo.UserTestVO;
@@ -72,5 +73,11 @@ public class TestPaperController {
                                      @RequestParam("pid") Integer pid,
                                      @RequestAttribute("user") UserDetails user){
         return paperService.markTestPaper(pid, uid, Integer.valueOf(user.getUsername()), jsonArray);
+    }
+
+    @GetMapping(value = "/showScore/{pid}")
+    public  Response<ScoreStatisticVO> showScore(@PathVariable("pid") Integer pid,
+                                                 @RequestAttribute("user") UserDetails user){
+        return paperService.showScore(pid, Integer.valueOf(user.getUsername()));
     }
 }

@@ -32,6 +32,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -254,6 +255,30 @@ public class TestPaperServiceImpl implements ITestPaperService {
                 .build();
     }
 
+    @Override
+    public Response<ScoreStatisticVO> showScore(Integer pid, Integer uid) {
+        List<UserTestVO> testList = testPaperMapper.listUserTestsOf(uid, null, pid, 0, 1);
+        NormalResponseBuilder<ScoreStatisticVO> builder = new NormalResponseBuilder<>();
+
+        if (testList.isEmpty()){
+            return builder
+                    .setCodeEnum(ResponseCodeEnum.NOT_FOUND)
+                    .build();
+        }
+
+        UserTestVO testVO = testList.get(0);
+        if (testVO.getJoinTime() == null || testVO.getJoinTime() <= 1){
+            return builder
+                    .setCodeEnum(ResponseCodeEnum.FAILED)
+                    .build();
+        }
+
+        return builder
+                .setCodeEnum(ResponseCodeEnum.SUCCESS)
+                .setData(statistic(uid, pid))
+                .build();
+    }
+
     private TestPaperWithQuestionWithSubmittedAnswerVO mapToTestPaperWithQuestionWithSubmittedAnswerVO(UserTestVO userTestVO,
                                                                                                        List<QuestionWithAnswerVO> testPaperWithQuestionsVO,
                                                                                                        List<SubmittedAnswer> submittedAnswerList){
@@ -309,6 +334,58 @@ public class TestPaperServiceImpl implements ITestPaperService {
         }
 
         return -1;
+    }
+
+    private ScoreStatisticVO statistic(Integer uid, Integer pid){
+        List<SubmittedAnswer> answerList = testPaperMapper.listSubmittedAnswers(uid, pid);
+        boolean notYetMark = answerList.stream()
+                .anyMatch(submittedAnswer -> submittedAnswer.getScore() < 0);
+
+        ScoreStatisticVO scoreStatisticVO = new ScoreStatisticVO();
+
+        if (notYetMark){
+            scoreStatisticVO.setTotalScore((short)-1);
+            scoreStatisticVO.setSubjectiveScore((short)-1);
+            scoreStatisticVO.setOptionScore((short)-1);
+            return scoreStatisticVO;
+        }
+
+        List<QuestionWithAnswerVO> questionWithAnswerVOList = testPaperMapper.listTestPaperQuestionsWithAnswer(pid);
+        Map<Integer, List<QuestionWithAnswerVO>> questionWithAnswerVOMap = questionWithAnswerVOList.stream()
+                .collect(Collectors.groupingBy(QuestionWithAnswerVO::getId));
+
+
+        Function<SubmittedAnswer, Byte> groupFunc = answer ->
+                Optional.ofNullable(getFromMapList(questionWithAnswerVOMap, answer.getQid()))
+                    .map(QuestionVO::getType)
+                    .orElse((byte)-1);
+
+        Map<Byte, List<SubmittedAnswer>> submittedAnswerMap = answerList.stream().collect(Collectors.groupingBy(groupFunc));
+
+        Integer optionScore = Optional.ofNullable(submittedAnswerMap.get(QuestionTypeEnum.OPTION.getCode()))
+                .map(submittedAnswerList -> submittedAnswerList.stream().mapToInt(SubmittedAnswer::getScore).sum())
+                .orElse(0);
+
+        Integer subjectiveScore = Optional.ofNullable(submittedAnswerMap.get(QuestionTypeEnum.SUBJECTIVE.getCode()))
+                .map(submittedAnswerList -> submittedAnswerList.stream().mapToInt(SubmittedAnswer::getScore).sum())
+                .orElse(0);
+
+
+        scoreStatisticVO.setSubjectiveScore(subjectiveScore.shortValue());
+        scoreStatisticVO.setOptionScore(optionScore.shortValue());
+        scoreStatisticVO.setTotalScore((short)(subjectiveScore + optionScore));
+
+        return scoreStatisticVO;
+    }
+
+    private <K,V> V getFromMapList(Map<K, List<V>> map, K key){
+        List<V> result = map.getOrDefault(key, Collections.emptyList());
+
+        if (result.isEmpty()){
+            return null;
+        }
+
+        return result.get(0);
     }
 
     /**
