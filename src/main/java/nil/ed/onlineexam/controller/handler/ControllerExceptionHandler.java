@@ -5,6 +5,7 @@ import nil.ed.onlineexam.aop.annotation.MethodInvokeLog;
 import nil.ed.onlineexam.common.NormalResponseBuilder;
 import nil.ed.onlineexam.common.Response;
 import nil.ed.onlineexam.common.ResponseCodeEnum;
+import nil.ed.onlineexam.util.ExceptionUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,9 +26,12 @@ public class ControllerExceptionHandler {
     @ResponseBody
     public Response<String> defaultExceptionHandler(HttpServletRequest request, HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
+        e.printStackTrace();
         return new NormalResponseBuilder<String>()
                 .setCodeEnum(ResponseCodeEnum.UNCAUGHT_EXCEPTION)
-                .setData(e.getMessage())
+                .setData(ExceptionUtils.getRootMessage(e))
                 .build();
     }
+
+
 }
