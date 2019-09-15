@@ -24,6 +24,6 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
         WebAuthenticationDetails details = (WebAuthenticationDetails)authentication.getDetails();
-        response.sendRedirect("/exam/success.html");
+        response.sendRedirect("/exam/index.html");
     }
 }
