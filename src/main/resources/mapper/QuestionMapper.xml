@@ -24,7 +24,7 @@
     `create_time`,
     `update_time`)
     values (
-    #{id,jdbcType=INTEGER},
+    NULL,
     #{type,jdbcType=TINYINT},
     #{content,jdbcType=VARCHAR},
     #{options,jdbcType=VARCHAR},
@@ -40,6 +40,7 @@
     <if test="type != null">
       where type = #{type}
     </if>
+    order by `t_question`.`create_time` desc
     limit #{pageStart},#{pageSize};
   </select>
 

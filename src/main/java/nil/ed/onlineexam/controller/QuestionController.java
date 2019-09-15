@@ -20,6 +20,12 @@ public class QuestionController {
     @MethodInvokeLog
     @GetMapping("/list")
     public Response<PageResult<Question>> listQuestions(@RequestParam(value = "type",required = false) Integer type){
-        return questionService.listQuestions(0, 20, type);
+        return questionService.listQuestions(0, Integer.MAX_VALUE, type);
+    }
+
+    @PostMapping(value = "/add")
+    public Response<Void> addQuestion(@RequestBody Question question,
+                                      @RequestAttribute("userId") Integer uid){
+        return questionService.addQuestion(question, uid);
     }
 }
