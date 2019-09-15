@@ -17,7 +17,7 @@ public interface ICourseService {
      * @param course 课程
      * @return 响应对象
      */
-    Response addCourse(Course course, Integer creator);
+    Response<Void> addCourse(Course course, Integer creator);
 
     /**
      * 参加课程
