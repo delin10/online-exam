@@ -6,6 +6,7 @@ import nil.ed.onlineexam.common.CommonVO;
 import nil.ed.onlineexam.common.PageResult;
 import nil.ed.onlineexam.common.Response;
 import nil.ed.onlineexam.entity.SubmittedAnswer;
+import nil.ed.onlineexam.entity.TestPaper;
 import nil.ed.onlineexam.vo.ScoreStatisticVO;
 import nil.ed.onlineexam.vo.TestPaperWithQuestionWithSubmittedAnswerVO;
 import nil.ed.onlineexam.vo.TestPaperWithQuestionsVO;
@@ -97,4 +98,11 @@ public interface ITestPaperService {
      * @return 成绩
      */
     Response<ScoreStatisticVO> showScore(Integer pid, Integer uid);
+
+    /**
+     * 查看用户名下考试
+     * @param uid 用户id
+     * @return 考试
+     */
+    Response<PageResult<TestPaper>> listOwnTestPaper(Integer uid);
 }
