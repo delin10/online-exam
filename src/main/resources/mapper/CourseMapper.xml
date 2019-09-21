@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nil.ed.onlineexam.mapper.CourseMapper">
+  <resultMap id="BaseResultMap" type="nil.ed.onlineexam.entity.Course">
+    <result column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="teacher" jdbcType="INTEGER" property="teacher" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="start_time" jdbcType="BIGINT" property="startTime" />
+    <result column="end_time" jdbcType="BIGINT" property="endTime" />
+  </resultMap>
+  <resultMap id="CourseVOResultMap" type="nil.ed.onlineexam.vo.CourseVO" extends="BaseResultMap">
+    <result column="teacher_name" jdbcType="VARCHAR" property="teacherName"/>
+    <result column="join_time" jdbcType="BIGINT" property="joinTime"/>
+  </resultMap>
+
+  <resultMap id="CourseWithStudentsVO" type="nil.ed.onlineexam.vo.CourseWithStudentsVO" extends="BaseResultMap">
+    <collection property="students" ofType="nil.ed.onlineexam.vo.UserOfCourseVO">
+      <result column="user_id" jdbcType="INTEGER" property="id" />
+      <result column="user_nick_name" jdbcType="VARCHAR" property="nickName"/>
+      <result column="user_join_time" jdbcType="BIGINT" property="joinTime"/>
+    </collection>
+  </resultMap>
+
+  <insert id="insert" parameterType="nil.ed.onlineexam.entity.Course">
+    insert into 
+    `t_course`(`id`,
+    `name`,
+    `teacher`,
+    `create_time`,
+    `update_time`,
+    `start_time`,
+    `end_time`,
+    `status`)
+    values(NULL,
+    #{course.name},
+    #{course.teacher},
+    #{course.createTime},
+    #{course.updateTime},
+    #{course.startTime},
+    #{course.endTime},
+    #{course.status})
+  </insert>
+
+  <select id="listCourses" resultMap="CourseVOResultMap">
+    select `t_course`.*,`t_user`.`nick_name` as `teacher_name`,`t_joined_course`.`create_time` as `join_time`
+    from `t_course`
+    left join `t_user` on `t_user`.`id` = `t_course`.`teacher`
+    left join `t_joined_course` on `t_course`.`id` = `t_joined_course`.`cid`
+    <where>
+      <if test="currentUser != null">
+        `t_user`.`id` = #{currentUser}
+      </if>
+    </where>
+    order by `t_course`.`create_time`
+    limit #{pageStart},#{pageSize}
+  </select>
+
+  <select id="countCourses" resultType="java.lang.Integer">
+    select count(*) from `t_course`
+  </select>
+
+  <select id="countCoursesIfUser" resultType="java.lang.Integer">
+    select count(*) from `t_course`
+    left join `t_user` on `t_user`.`id` = `t_course`.`teacher`
+    left join `t_joined_course` on `t_course`.`id` = `t_joined_course`.`cid`
+    <where>
+      <if test="currentUser != null">
+        `t_user`.`id` = #{currentUser}
+      </if>
+    </where>
+  </select>
+
+  <select id="getCourseById" resultMap="BaseResultMap">
+    select * from `t_course` where `t_course`.`id` = #{id}
+  </select>
+
+  <delete id="deleteCourseById">
+    delete from `t_course` where `t_course`.`id` = #{id}
+  </delete>
+
+  <update id="updateCourse" parameterType="nil.ed.onlineexam.entity.Course">
+    update `t_course`
+    <set>
+      <if test="#{course.name} != null">
+        `t_course`.`name` = #{course.name},
+      </if>
+      `t_course`.`update_time` = #{course.updateTime},
+      `t_course`.`status` = #{course.status}
+    </set>
+    <where>
+      `t_course`.`id` = #{course.id}
+    </where>
+  </update>
+
+  <insert id="joinCourse">
+    insert into
+    `t_joined_course`(`id`,
+    `uid`,
+    `cid`,
+    `score`,
+    `create_time`,
+    `update_time`)
+    values(#{joinedCourse.id},
+    #{joinedCourse.uid},
+    #{joinedCourse.cid},
+    #{joinedCourse.score},
+    #{joinedCourse.createTime},
+    #{joinedCourse.updateTime})
+  </insert>
+
+  <select id="listJoinedCourses" resultMap="CourseVOResultMap">
+    select `t_course`.*, `t_user`.`nick_name` as `teacher_name`
+    from `t_course`
+    left join `t_joined_course` on `t_course`.`id` = `t_joined_course`.`cid`
+    left join `t_user` on `t_user`.`id` = `t_course`.`teacher`
+    where `t_joined_course`.`uid` = #{uid}
+  </select>
+
+  <select id="countJoinedCourses" resultType="java.lang.Integer">
+    select count(*)
+    from `t_course`
+    left join `t_joined_course` on `t_course`.`id` = `t_joined_course`.`cid`
+    left join `t_user` on `t_user`.`id` = `t_course`.`teacher`
+    where `t_joined_course`.`uid` = #{uid}
+  </select>
+
+  <select id="listCourseWithStudents" resultMap="CourseWithStudentsVO">
+    select `t_course`.*,
+           `t_user`.`id` as `user_id`,
+           `t_user`.`nick_name` as `user_nick_name`,
+           `t_joined_course`.`create_time` as `user_join_time`
+    from `t_course`
+    left join `t_joined_course` on `t_course`.`id` = `t_joined_course`.`cid`
+    left join `t_user` on `t_joined_course`.`uid` = `t_user`.`id`
+    <where>
+        <if test="cid != null">
+          `t_course`.`id` = #{cid}
+        </if>
+        <if test="currentUser != null">
+          and `t_course`.`teacher` = #{currentUser}
+        </if>
+    </where>
+    order by `t_course`.`create_time` DESC
+    limit #{pageStart},#{pageSize}
+  </select>
+</mapper>

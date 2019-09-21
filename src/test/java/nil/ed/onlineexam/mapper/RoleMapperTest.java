@@ -11,6 +11,6 @@ public class RoleMapperTest extends AbstractServiceTest {
 
     @Test
     public void testListRoles() {
-        printAsJsonString(mapper.listRoles());
+        printAsJsonString(mapper.listRoles(0, 100));
     }
 }

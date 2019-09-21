@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>学生花名册</title>
+  <link rel="stylesheet" href="/exam/layui/css/layui.css">
+  <link rel="stylesheet" href="/exam/layui/css/modules/layer/default/layer.css">
+</head>
+<body>
+<table id="studentTbl" lay-filter="studentTbl"></table>
+
+<script type="text/html" id="studentTblOpBtn">
+  <a class="layui-btn layui-btn-xs" lay-event="showJoinedTest">查看考试</a>
+</script>
+<script type="text/html" id="joinedTestTblBar">
+  <a class="layui-btn layui-btn-xs" href="/exam/course/markPaper.html?pid={{ d.id }}&uid={{ opUid }}">{{ joinedTestTblBarMapper(d)['opTitle'] }}</a>
+</script>
+<script src="/exam/layui/layui.js" type="application/javascript"></script>
+<script src="/exam/js/index.js" type="application/javascript"></script>
+<script src="/exam/js/studentList.js" type="application/javascript"></script>
+</body>
+</html>

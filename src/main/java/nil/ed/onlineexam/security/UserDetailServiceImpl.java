@@ -6,6 +6,8 @@ import nil.ed.onlineexam.entity.User;
 import nil.ed.onlineexam.mapper.PermissionMapper;
 import nil.ed.onlineexam.mapper.RoleMapper;
 import nil.ed.onlineexam.mapper.UserMapper;
+import nil.ed.onlineexam.service.IUserService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,7 +28,8 @@ import java.util.stream.Collectors;
  */
 public class UserDetailServiceImpl implements UserDetailsService {
     @Resource
-    private UserMapper userMapper;
+    @Qualifier("userService")
+    private IUserService userService;
     @Resource
     private PermissionMapper permissionMapper;
     @Resource
@@ -38,11 +41,11 @@ public class UserDetailServiceImpl implements UserDetailsService {
         try {
             // 获取用户信息
             Integer id = Integer.valueOf(idStr);
-            User user = userMapper.getUserById(id);
+            User user = userService.getUser(id).getData();
 
             if (user != null){
                 // 获取并且映射权限列表
-                List<Permission> permissionLS = roleMapper.listPermissionsOfRole(user.getRole());
+                List<Permission> permissionLS = permissionMapper.listPermissionsOfRole(user.getRole());
 
                 return new org.springframework.security.core.userdetails.User(String.valueOf(user.getId()),
                         user.getPasswordMd5(), Collections.singletonList(new SimpleGrantedAuthority(String.valueOf(user.getRole()))));
@@ -50,7 +53,8 @@ public class UserDetailServiceImpl implements UserDetailsService {
                 throw new UsernameNotFoundException(MessageFormat.format("No such user whose uid = {0}", idStr));
             }
         }catch (Exception e){
-            throw new UsernameNotFoundException(e.getMessage());
+            e.printStackTrace();
+            throw new UsernameNotFoundException(e.toString());
         }
     }
 

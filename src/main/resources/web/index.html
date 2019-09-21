@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>首页</title>
+  <link rel="stylesheet" href="/exam/layui/css/layui.css">
+</head>
+<body>
+<ul class="layui-nav layui-nav-tree  layui-nav-side" lay-filter="test">
+  <li class="layui-nav-item">
+    <a href="javascript:;">课程管理</a>
+    <dl class="layui-nav-child">
+      <dd><a href="/exam/course/openShowCourse.html">查看可参加课程</a></dd>
+      <dd><a href="/exam/course/privateShowCourse.html">查看名下课程</a></dd>
+    </dl>
+  </li>
+  <li class="layui-nav-item layui-nav-item">
+    <a href="javascript:;">试卷管理</a>
+    <dl class="layui-nav-child">
+      <dd><a href="/exam/test/addTestPaper.html">添加试卷</a></dd>
+      <dd><a href="/exam/test/listTests.html">显示考试</a></dd>
+      <dd><a href="/exam/test/listOwnTests.html">显示名下考试</a></dd>
+    </dl>
+  </li>
+  <li class="layui-nav-item layui-nav-item">
+    <a href="javascript:;">题库管理</a>
+    <dl class="layui-nav-child">
+      <dd><a href="/exam/question/addQuestion.html">查看题目</a></dd>
+    </dl>
+  </li>
+  <li class="layui-nav-item layui-nav-item">
+    <a href="javascript:;">高级管理</a>
+    <dl class="layui-nav-child">
+      <dd><a href="/exam/advanced/addUser.html">添加用户</a></dd>
+      <dd><a href="/exam/advanced/setRole.html">配置角色</a></dd>
+      <dd><a href="/exam/advanced/addResource.html">配置资源</a></dd>
+    </dl>
+  </li>
+
+</ul>
+<script src="/exam/layui/layui.js" type="application/javascript"></script>
+<script src="/exam/js/index.js" type="application/javascript"></script>
+<script src="/exam/js/indexPage.js" type="application/javascript"></script>
+</body>
+</html>

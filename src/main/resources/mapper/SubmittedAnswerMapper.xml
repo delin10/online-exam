@@ -67,70 +67,14 @@
       </if>
     </trim>
   </insert>
-  <resultMap id="BaseResultMap" type="nil.ed.onlineexam.entity.SubmittedAnswer">
-    <result column="id" jdbcType="INTEGER" property="id" />
-    <result column="uid" jdbcType="INTEGER" property="uid" />
-    <result column="pid" jdbcType="INTEGER" property="pid" />
-    <result column="qid" jdbcType="INTEGER" property="qid" />
-    <result column="answer" jdbcType="VARCHAR" property="answer" />
-    <result column="score" jdbcType="INTEGER" property="score" />
-    <result column="create_time" jdbcType="BIGINT" property="createTime" />
-  </resultMap>
-  <insert id="insert" parameterType="nil.ed.onlineexam.entity.SubmittedAnswer">
-    insert into t_submitted_answer (id, uid, pid, 
-      qid, answer, score, 
-      create_time)
-    values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=INTEGER}, #{pid,jdbcType=INTEGER}, 
-      #{qid,jdbcType=INTEGER}, #{answer,jdbcType=VARCHAR}, #{score,jdbcType=INTEGER}, 
-      #{createTime,jdbcType=BIGINT})
-  </insert>
-  <insert id="insertSelective" parameterType="nil.ed.onlineexam.entity.SubmittedAnswer">
-    insert into t_submitted_answer
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="uid != null">
-        uid,
-      </if>
-      <if test="pid != null">
-        pid,
-      </if>
-      <if test="qid != null">
-        qid,
-      </if>
-      <if test="answer != null">
-        answer,
-      </if>
-      <if test="score != null">
-        score,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="uid != null">
-        #{uid,jdbcType=INTEGER},
-      </if>
-      <if test="pid != null">
-        #{pid,jdbcType=INTEGER},
-      </if>
-      <if test="qid != null">
-        #{qid,jdbcType=INTEGER},
-      </if>
-      <if test="answer != null">
-        #{answer,jdbcType=VARCHAR},
-      </if>
-      <if test="score != null">
-        #{score,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=BIGINT},
-      </if>
-    </trim>
-  </insert>
+
+  <update id="updateSubjectiveQuestionScore">
+    update `t_submitted_answer`
+    left join `t_test_paper` on `t_test_paper`.`id` = `t_submitted_answer`.`pid`
+    left join `t_question` on `t_question`.`id` = `t_submitted_answer`.`qid`
+    set `t_submitted_answer`.`score` = #{score}
+    where pid = #{pid}
+    and qid = #{qid} and uid = #{uid} and `t_test_paper`.`creator` = #{updater} and `t_question`.`type` = 1;
+  </update>
+
 </mapper>

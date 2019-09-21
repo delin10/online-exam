@@ -21,11 +21,9 @@ import java.io.IOException;
 public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        log.info("success");
-
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
         WebAuthenticationDetails details = (WebAuthenticationDetails)authentication.getDetails();
-        response.getWriter().println(JSON.toJSONString(authentication));
+        response.sendRedirect("/exam/index.html");
     }
 }

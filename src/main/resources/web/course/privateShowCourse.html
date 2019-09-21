@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>查看课程</title>
+  <link rel="stylesheet" href="/exam/layui/css/layui.css">
+  <link rel="stylesheet" href="/exam/layui/css/modules/laydate/default/laydate.css">
+  <link rel="stylesheet" href="/exam/layui/css/modules/layer/default/layer.css">
+</head>
+<body>
+  <table id="courseTbl" lay-filter="courseTbl">
+
+  </table>
+
+  <script type="text/html" id="addCourseFormScript">
+    <form id="addCourseForm" class="layui-form" lay-filter="addCourseForm" style="margin-top: 20px">
+      <div class="layui-form-item">
+        <label class="layui-form-label">课程名称</label>
+        <div class="layui-input-inline">
+          <input id="name" type="text" name="name" required placeholder="请输入名称" autocomplete="off" class="layui-input">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">结束时间</label>
+        <div class="layui-input-inline">
+          <input id="startTime" value="2019-09-11 00:00:00" type="text" name="startTime" required  lay-verify="required" placeholder="yyyy-MM-dd HH:mm:ss" class="layui-input">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">结束时间</label>
+        <div class="layui-input-inline">
+          <input id="endTime" value="2019-09-11 00:00:00" type="text" name="endTime" required  lay-verify="required" placeholder="yyyy-MM-dd HH:mm:ss" class="layui-input">
+        </div>
+      </div>
+    </form>
+  </script>
+
+  <script type="text/html" id="courseTblToolbar">
+    <div class="layui-btn-container">
+      <button class="layui-btn layui-btn-sm" lay-event="addCourse">添加课程</button>
+    </div>
+  </script>
+  <script type="text/html" id="opToolBar">
+    <a class="layui-btn layui-btn-xs" href="/exam/course/studentList.html?cid={{ d.id }}">评卷</a>
+  </script>
+  <script src="/exam/layui/layui.js" type="application/javascript"></script>
+  <script src="/exam/js/index.js" type="application/javascript"></script>
+  <script src="/exam/js/privateShowCourse.js" type="application/javascript"></script>
+</body>
+</html>

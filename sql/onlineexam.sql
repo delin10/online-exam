@@ -115,7 +115,7 @@ create table `t_joined_course`(
     `id` int unsigned auto_increment not null comment '起标志作用',
     `uid` int unsigned not null comment '参与课程的用户id',
     `cid` int unsigned not null comment '课程id',
-    `score` mediumint default -1 comment '分数，初始化为-1',
+    `score` mediumint default -1 comment '课程分数，不一定为试卷分数，初始化为-1',
     `join_test_time` bigint unsigned default null comment '参加考试的时间',
     `create_time` bigint unsigned not null comment '记录创建时间',
     `update_time` bigint unsigned not null comment '记录更新时间',
@@ -123,6 +123,24 @@ create table `t_joined_course`(
     key (uid),
     key (cid)
 )engine=innodb default character set utf8mb4;
+
+alter table `t_joined_course` drop column `join_test_time`;
+alter table `t_joined_course` add unique key t_joined_course_unique_key_uid_cid(`uid`,`cid`);
+
+-- 参加考试的表
+create table `t_joined_test`(
+    `id` int unsigned auto_increment not null comment '起标志作用',
+    `uid` int unsigned not null comment '参与考试的用户id',
+    `tid` int unsigned not null comment '试卷id',
+    `score` mediumint default -1 comment '分数，初始化为-1',
+    `create_time` bigint unsigned not null comment '记录创建时间',
+    `update_time` bigint unsigned not null comment '记录更新时间',
+    primary key(id),
+    key (uid),
+    key (tid)
+)engine=innodb default character set utf8mb4;
+
+alter table `t_joined_test` add unique index t_joined_test_unique_index_uid_tid(`uid`, `tid`);
 
 -- 提交答案的表
 create table `t_submitted_answer`(
@@ -138,6 +156,9 @@ create table `t_submitted_answer`(
     key (pid),
     key (qid)
 )engine=innodb default character set utf8mb4;
+
+alter table `t_submitted_answer` add unique key t_submitted_answer_unique_key_uid__pid_qid(`pid`,`uid`,`qid`);
+
 
 create table `t_test_paper_content_item`(
     `id` int unsigned auto_increment not null comment '记录id',
@@ -161,6 +182,15 @@ insert into `t_role` values(1,'manager','',unix_timestamp(current_timestamp(3))*
 insert into `t_role` values(2,'normal','',unix_timestamp(current_timestamp(3))*1000,unix_timestamp(current_timestamp(3))*1000,0);
 
 insert into `t_resource` values (NULL, 'test', '/api/test/{id}', 0,unix_timestamp(current_timestamp(3))*1000,unix_timestamp(current_timestamp(3))*1000, 0);
+insert into `t_resource` values (NULL, 'listQuestion', '/exam/question/list', 0,unix_timestamp(current_timestamp(3))*1000,unix_timestamp(current_timestamp(3))*1000, 0);
+insert into `t_resource` values (NULL, 'addTestPaper', '/exam/testPaper/add', 0,unix_timestamp(current_timestamp(3))*1000,unix_timestamp(current_timestamp(3))*1000, 0);
+insert into `t_resource` values (NULL, 'listTests', '/exam/testPaper/list', 0,unix_timestamp(current_timestamp(3))*1000,unix_timestamp(current_timestamp(3))*1000, 0);
+insert into `t_resource` values (NULL, 'joinCourse', '/exam/course/join/{cid}', 0,unix_timestamp(current_timestamp(3))*1000,unix_timestamp(current_timestamp(3))*1000, 0);
+insert into `t_resource` values (NULL, 'listAllResource', '/exam/resource/list/all', 0,unix_timestamp(current_timestamp(3))*1000,unix_timestamp(current_timestamp(3))*1000, 0);
+insert into `t_resource` values (NULL, 'authRoleResource', '/exam/role/auth', 0,unix_timestamp(current_timestamp(3))*1000,unix_timestamp(current_timestamp(3))*1000, 0);
+insert into `t_resource` values (NULL, 'addResource', '/exam/resource/add', 0,unix_timestamp(current_timestamp(3))*1000,unix_timestamp(current_timestamp(3))*1000, 0);
+
+insert into `t_joined_course` values (NULL, 2, 10 , -1, 1,unix_timestamp(current_timestamp(3))*1000,unix_timestamp(current_timestamp(3))*1000);
 
 insert into `t_role_resource` values (NULL, 2, 1, unix_timestamp(current_timestamp(3))*1000, 0);
 
@@ -173,3 +203,5 @@ left join `t_role_resource` trr on `tr`.`id` = `trr`.`role_id`
 left join `t_resource` trs on `trs`.`id` = `trr`.`resource_id`
 where `tr`.`id` = 2;
 */
+
+select 1 from (select count(*) as c from `t_resource` where id in (1,2)) t where t.c == 2 ;

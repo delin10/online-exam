@@ -6,15 +6,14 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="desc" jdbcType="VARCHAR" property="desc" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
-    <result column="last_update_time" jdbcType="BIGINT" property="lastUpdateTime" />
+    <result column="last_update_time" jdbcType="BIGINT" property="updateTime" />
     <result column="creator" jdbcType="INTEGER" property="creator" />
   </resultMap>
-  <insert id="insert" parameterType="nil.ed.onlineexam.entity.Role">
-    insert into t_role (id, name, desc, 
-      create_time, last_update_time, creator
-      )
-    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=BIGINT}, #{lastUpdateTime,jdbcType=BIGINT}, #{creator,jdbcType=INTEGER}
+  <insert id="insert" parameterType="nil.ed.onlineexam.entity.Role" useGeneratedKeys="true">
+    insert into t_role (`id`, `name`, `desc`,
+      `create_time`, `update_time`, `creator`)
+    values (NULL, #{name,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR},
+            unix_timestamp(current_timestamp(3))*1000, unix_timestamp(current_timestamp(3))*1000, #{creator,jdbcType=INTEGER}
       )
   </insert>
   <insert id="insertSelective" parameterType="nil.ed.onlineexam.entity.Role">
@@ -32,7 +31,7 @@
       <if test="createTime != null">
         create_time,
       </if>
-      <if test="lastUpdateTime != null">
+      <if test="updateTime != null">
         last_update_time,
       </if>
       <if test="creator != null">
@@ -52,8 +51,8 @@
       <if test="createTime != null">
         #{createTime,jdbcType=BIGINT},
       </if>
-      <if test="lastUpdateTime != null">
-        #{lastUpdateTime,jdbcType=BIGINT},
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=BIGINT},
       </if>
       <if test="creator != null">
         #{creator,jdbcType=INTEGER},
@@ -62,6 +61,9 @@
   </insert>
   <select id="listRoles" resultMap="BaseResultMap">
     select * from `t_role`;
+  </select>
+  <select id="countRoles" resultType="java.lang.Integer">
+    select count(*) from `t_role`;
   </select>
 
   <select id="getRoleById" resultMap="BaseResultMap">
@@ -87,11 +89,22 @@
     </where>
   </update>
 
-  <select id="listPermissionsOfRole" resultMap="nil.ed.onlineexam.mapper.PermissionMapper.BaseResultMap">
-    select `trs`.*
-    from `t_role` tr
-    left join `t_role_resource` trr on `tr`.`id` = `trr`.`role_id`
-    left join `t_resource` trs on `trs`.`id` = `trr`.`resource_id`
-    where `tr`.`id` = #{id};
-  </select>
+  <delete id="deleteResourceOfRole">
+    delete from `t_role_resource`
+    where `t_role_resource`.`role_id`=#{roleId} and `t_role_resource`.`resource_id` = #{resourceId}
+  </delete>
+
+  <insert id="addResourceOfRole">
+    insert into
+    `t_role_resource`(`id`,
+                     `role_id`,
+                     `resource_id`,
+                     `create_time`,
+                     `creator`)
+    values (NULL,
+           #{roleId},
+           #{resourceId},
+           unix_timestamp(current_timestamp(3))*1000,
+           #{creator})
+  </insert>
 </mapper>

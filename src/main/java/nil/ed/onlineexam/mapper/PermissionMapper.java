@@ -3,6 +3,7 @@ package nil.ed.onlineexam.mapper;
 import nil.ed.onlineexam.entity.Permission;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface PermissionMapper {
@@ -17,4 +18,10 @@ public interface PermissionMapper {
     int deleteResourceById(@Param("id") Integer id);
 
     int updateResource(@Param("permission") Permission permission);
+
+    List<Permission> listPermissionsOfRole(@Param("roleId") Integer roleId);
+
+    List<Permission> listPermissionsOfUser(@Param("userId") Integer userId);
+
+    Integer checkIdList(@Param("idLs") Collection<Integer> idLs);
 }

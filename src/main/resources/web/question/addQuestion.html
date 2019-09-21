@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>题库管理</title>
+  <link rel="stylesheet" href="/exam/layui/css/layui.css">
+  <link rel="stylesheet" href="/exam/layui/css/modules/layer/default/layer.css">
+</head>
+<body>
+<table id="questionTbl" lay-filter="questionTbl"></table>
+
+<script type="text/html" id="addOptionQuestionFormScript">
+  <form id="addOptionQuestionForm" class="layui-form" lay-filter="addOptionQuestionForm" style="margin-top: 20px">
+    <div class="layui-form-item">
+      <label class="layui-form-label">题目内容</label>
+      <div class="layui-input-inline">
+        <input  type="text" name="content" required placeholder="请输入题目内容" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">答案</label>
+      <div class="layui-input-inline">
+        <input type="text" name="answer" required placeholder="请输入答案" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">A</label>
+      <div class="layui-input-inline">
+        <input type="text" name="option0" required placeholder="请输入选项" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+  </form>
+</script>
+<script type="text/html" id="addSubjectiveQuestionFormScript">
+  <form id="addSubjectiveQuestionForm" class="layui-form" lay-filter="addSubjectiveQuestionForm" style="margin-top: 20px">
+    <div class="layui-form-item">
+      <label class="layui-form-label">题目内容</label>
+      <div class="layui-input-inline">
+        <input id="content" type="text" name="content" required placeholder="请输入题目内容" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">答案</label>
+      <div class="layui-input-inline">
+        <input id="answer" type="text" name="answer" required placeholder="请输入答案" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+  </form>
+</script>
+
+<script type="text/html" id="questionTblToolbar">
+  <div class="layui-btn-container">
+    <button class="layui-btn layui-btn-sm" lay-event="addSubjectiveQuestion">添加主观题</button>
+    <button class="layui-btn layui-btn-sm" lay-event="addOptionQuestion">添加选择题</button>
+  </div>
+</script>
+<script src="/exam/js/index.js" type="application/javascript"></script>
+<script src="/exam/layui/layui.js" type="application/javascript"></script>
+<script src="/exam/js/addQuestion.js" type="application/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nil.ed.onlineexam.mapper.JoinedTestMapper">
+    <resultMap id="BaseResultMap" type="nil.ed.onlineexam.entity.JoinedTest">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="uid" jdbcType="INTEGER" property="uid" />
+        <result column="tid" jdbcType="INTEGER" property="tid" />
+        <result column="score" jdbcType="SMALLINT" property="score" />
+        <result column="create_time" jdbcType="BIGINT" property="createTime" />
+        <result column="update_time" jdbcType="BIGINT" property="updateTime" />
+    </resultMap>
+    <insert id="insert" parameterType="nil.ed.onlineexam.entity.JoinedCourse">
+        insert into `t_joined_test` (id, uid, tid,
+                                     score, create_time,
+                                     update_time)
+        values (NULL, #{uid,jdbcType=INTEGER}, #{tid,jdbcType=INTEGER},
+                #{score,jdbcType=INTEGER}, #{createTime,jdbcType=BIGINT},
+                #{updateTime,jdbcType=BIGINT})
+    </insert>
+
+    <update id="updateScore" parameterType="nil.ed.onlineexam.entity.JoinedTest">
+        update `t_joined_test`
+        <set>
+            <if test="score != null">
+                `score` = #{score}
+            </if>
+        </set>
+        where `t_joined_test`.`uid` = #{joinedTest.uid} and `t_joined_test`.`tid` = #{joinedTest.tid}
+    </update>
+</mapper>

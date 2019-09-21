@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>试卷</title>
+    <link rel="stylesheet" href="/exam/layui/css/layui.css">
+</head>
+<body>
+    <div class="layui-container">
+        <div class="layui-row">
+            <table class="exist-test-paper" lay-filter="exist-test-paper">
+
+            </table>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md1"></div>
+            <div id="paper-container" class="layui-col-md8">
+            </div>
+            <div class="layui-col-md1"></div>
+        </div>
+    </div>
+
+    <script id="paperTmp" type="text/html">
+        <div>
+            <h3>{{ d.name }}</h3>
+            <p>分值：{{ d.score }}</p>
+            <p>开始时间：{{ dateToTime(d.startTime/1000) }}</p>
+            <p>结束时间：{{ dateToTime(d.endTime/1000) }}</p>
+            <p>考试时长：{{ d.testDuration }}分钟</p>
+        </div>
+        <HR style="FILTER:alpha(opacity=100,finishopacity=0,style=3)" width="90%"color=#987cb9 SIZE=3>
+        <div>
+            <form class="layui-form">
+                {{#  layui.each(d.questions, function(index, item){ }}
+                 <div class="layui-form-item">
+                     <div>{{ item.firstSeq }}-{{ item.secSeq }}. {{ item.content }}({{ item.score }})</div>
+                     {{#  if(item.type == 0){ }}
+                        <div>
+                        {{#  layui.each(JSON.parse(item.options), function(index, option){ }}
+                            <input type="radio" name="qid{{ item.id }}" value="{{ index }}" title="{{ option }}" class="layui-input"/>
+                        {{# }); }}
+                         </div>
+                    {{#  } else { }}
+                        <br />
+                        <div>
+                            <textarea name="qid{{ item.id }}" placeholder="请输入内容" class="layui-textarea"></textarea>
+                        </div>
+                    {{#  } }}
+                 </div>
+                {{#  }); }}
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="submit-answer">提交答案</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </script>
+
+    <script src="/exam/js/index.js" type="application/javascript"></script>
+    <script src="/exam/layui/layui.js" type="application/javascript"></script>
+    <script src="/exam/js/showTestpaper.js" type="application/javascript"></script>
+</body>
+</html>

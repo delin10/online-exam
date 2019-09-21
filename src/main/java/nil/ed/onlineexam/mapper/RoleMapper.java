@@ -12,11 +12,17 @@ public interface RoleMapper {
     int insertSelective(Role record);
 
 
-    List<Role> listRoles();
+    List<Role> listRoles(Integer pageNo, Integer pageSize);
+
+    Integer countRoles();
 
     Role getRoleById(@Param("id") Integer id);
 
     Integer deleteRoleById(@Param("id" )Integer id);
 
     Integer updateRole(@Param("role") Role role);
+
+    Integer deleteResourceOfRole(@Param("roleId") Integer roleId, @Param("resourceId") Integer resourceId);
+
+    Integer addResourceOfRole(@Param("roleId") Integer roleId, @Param("resourceId") Integer resourceId, @Param("creator") Integer creator);
 }

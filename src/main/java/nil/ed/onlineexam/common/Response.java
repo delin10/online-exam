@@ -3,7 +3,7 @@ package nil.ed.onlineexam.common;
 import lombok.Data;
 
 @Data
-public class Response {
+public class Response<T> {
     /*
      code
     */
@@ -17,5 +17,5 @@ public class Response {
     /*
     the payload
      */
-    private Object data;
+    private T data;
 }

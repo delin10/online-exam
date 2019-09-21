@@ -18,6 +18,12 @@ public abstract class ResponseBuilder<T> {
         return this;
     }
 
+    public ResponseBuilder<T> setCodeEnum(ResponseCodeEnum responseCodeEnum){
+        this.setCode(responseCodeEnum.getCode())
+            .setMessage(responseCodeEnum.getMessage());
+        return this;
+    }
+
     public String getMessage() {
         return message;
     }
@@ -36,5 +42,5 @@ public abstract class ResponseBuilder<T> {
         return this;
     }
 
-    public abstract Response build();
+    public abstract Response<T> build();
 }

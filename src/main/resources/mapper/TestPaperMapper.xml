@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="nil.ed.onlineexam.mapper.TestPaperMapper">
   <resultMap id="BaseResultMap" type="nil.ed.onlineexam.entity.TestPaper">
-    <result column="id" jdbcType="INTEGER" property="id" />
+    <id column="id" jdbcType="INTEGER" property="id" />
     <result column="cid" jdbcType="INTEGER" property="cid" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="start_time" jdbcType="BIGINT" property="startTime" />
@@ -13,81 +13,226 @@
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
     <result column="published" jdbcType="TINYINT" property="published" />
   </resultMap>
-  <insert id="insert" parameterType="nil.ed.onlineexam.entity.TestPaper">
-    insert into t_test_paper (id, cid, name, 
-      start_time, end_time, test_duration, 
-      score, creator, create_time, 
-      published)
-    values (#{id,jdbcType=INTEGER}, #{cid,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
-      #{startTime,jdbcType=BIGINT}, #{endTime,jdbcType=BIGINT}, #{testDuration,jdbcType=INTEGER}, 
-      #{score,jdbcType=INTEGER}, #{creator,jdbcType=INTEGER}, #{createTime,jdbcType=BIGINT}, 
-      #{published,jdbcType=TINYINT})
+  <resultMap id="BaseTestPaperVOResultMap" type="nil.ed.onlineexam.vo.BaseTestPaperVO">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="cid" jdbcType="INTEGER" property="cid" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="start_time" jdbcType="BIGINT" property="startTime" />
+        <result column="end_time" jdbcType="BIGINT" property="endTime" />
+        <result column="test_duration" jdbcType="INTEGER" property="testDuration" />
+        <result column="score" jdbcType="INTEGER" property="score" />
+        <result column="course_name" jdbcType="VARCHAR" property="courseName"/>
+  </resultMap>
+  <resultMap id="TestPaperVOResultMap" type="nil.ed.onlineexam.vo.TestPaperWithQuestionsVO" extends="BaseTestPaperVOResultMap">
+    <collection ofType="nil.ed.onlineexam.vo.TestPaperQuestionVO" property="questions">
+      <id column="qid" jdbcType="INTEGER" property="id" />
+      <result column="type" jdbcType="TINYINT" property="type" />
+      <result column="content" jdbcType="VARCHAR" property="content" />
+      <result column="options" jdbcType="VARCHAR" property="options" />
+      <result column="first_seq" jdbcType="INTEGER" property="firstSeq" />
+      <result column="sec_seq" jdbcType="INTEGER" property="secSeq" />
+      <result column="q_score" jdbcType="INTEGER" property="score" />
+    </collection>
+  </resultMap>
+  <resultMap id="UserTestVOResultMap" type="nil.ed.onlineexam.vo.UserTestVO" extends="BaseTestPaperVOResultMap">
+      <result column="join_time" jdbcType="BIGINT" property="joinTime"/>
+  </resultMap>
+  <insert id="insert" parameterType="nil.ed.onlineexam.entity.TestPaper" useGeneratedKeys="true" keyProperty="id">
+    insert into
+    `t_test_paper` (`id`,
+    `cid`,
+    `name`,
+    `start_time`,
+    `end_time`,
+    `test_duration`,
+    `score`,
+    `creator`,
+    `create_time`)
+    values(#{id,jdbcType=INTEGER},
+    #{cid,jdbcType=INTEGER},
+    #{name,jdbcType=VARCHAR},
+    #{startTime,jdbcType=BIGINT},
+    #{endTime,jdbcType=BIGINT},
+    #{testDuration,jdbcType=INTEGER},
+    #{score,jdbcType=INTEGER},
+    #{creator,jdbcType=INTEGER},
+    #{createTime,jdbcType=BIGINT})
   </insert>
-  <insert id="insertSelective" parameterType="nil.ed.onlineexam.entity.TestPaper">
-    insert into t_test_paper
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="cid != null">
-        cid,
-      </if>
-      <if test="name != null">
-        name,
-      </if>
-      <if test="startTime != null">
-        start_time,
-      </if>
-      <if test="endTime != null">
-        end_time,
-      </if>
-      <if test="testDuration != null">
-        test_duration,
-      </if>
-      <if test="score != null">
-        score,
-      </if>
-      <if test="creator != null">
-        creator,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="published != null">
-        published,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="cid != null">
-        #{cid,jdbcType=INTEGER},
-      </if>
-      <if test="name != null">
-        #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="startTime != null">
-        #{startTime,jdbcType=BIGINT},
-      </if>
-      <if test="endTime != null">
-        #{endTime,jdbcType=BIGINT},
-      </if>
-      <if test="testDuration != null">
-        #{testDuration,jdbcType=INTEGER},
-      </if>
-      <if test="score != null">
-        #{score,jdbcType=INTEGER},
-      </if>
-      <if test="creator != null">
-        #{creator,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=BIGINT},
-      </if>
-      <if test="published != null">
-        #{published,jdbcType=TINYINT},
-      </if>
-    </trim>
-  </insert>
+
+  <delete id="deleteTestPaperById">
+    delete from `t_test_paper` where `t_test_paper`.`id` = #{id}
+  </delete>
+
+  <select id="getTestPaperById" resultMap="TestPaperVOResultMap">
+    select `ttp`.`id`,
+           `ttp`.`cid`,
+           `ttp`.`name`,
+           `ttp`.`start_time`,
+           `ttp`.`end_time`,
+           `ttp`.`test_duration`,
+           `ttp`.`score`,
+           `ttpci`.`qid`,
+           `ttpci`.`first_seq`,
+           `ttpci`.`sec_seq`,
+           `ttpci`.`score` as `q_score`,
+           `tq`.`type`,
+           `tq`.`content`,
+           `tq`.`options`,
+           `t_course`.name as `course_name`
+    from `t_test_paper` `ttp`
+    left join `t_test_paper_content_item` `ttpci` on `ttp`.`id` = `ttpci`.`pid`
+    left join `t_question` tq on `tq`.`id` = `ttpci`.`qid`
+    left join `t_course` on `t_course`.`id` = `ttp`.`cid`
+    where `ttpci`.`pid` = #{id} and `ttp`.`published` = 1
+    order by `first_seq` ASC, `sec_seq` ASC;
+  </select>
+
+  <update id="updatePublishedStatus">
+    update `t_test_paper`
+    set `published` = #{status}
+    where `id` = #{pid} and `creator` = #{uid};
+  </update>
+
+  <select id="listPublishedTestPapersOf" resultMap="BaseTestPaperVOResultMap">
+    select `ttp`.`id`,
+           `ttp`.`cid`,
+           `ttp`.`name`,
+           `ttp`.`start_time`,
+           `ttp`.`end_time`,
+           `ttp`.`test_duration`,
+           `ttp`.`score`,
+           `t_course`.name as `course_name`
+    from `t_test_paper` `ttp`
+    left join `t_joined_course` `tjc` on `tjc`.`cid` = `ttp`.`cid`
+    left join `t_course` on `t_course`.`id` = `ttp`.`cid`
+    <where>
+        `tjc`.`uid` = #{uid}
+        and `ttp`.`published` = 1
+        <if test="cid != null">
+            and `ttp`.`cid` = #{cid}
+        </if>
+    </where>
+    order by `ttp`.`start_time`
+    limit #{pageStart},#{pageSize};
+  </select>
+  <select id="countPublishedTestPapersOf" resultType="java.lang.Integer">
+    select count(*)
+    from `t_test_paper` `ttp`
+    left join `t_joined_course` `tjc` on `tjc`.`cid` = `ttp`.`cid`
+    left join `t_course` on `t_course`.`id` = `tjc`.`cid`
+    <where>
+        `tjc`.`uid` = #{uid}
+        and `ttp`.`published` = 1
+        <if test="cid != null">
+            and `ttp`.`cid` = #{cid}
+        </if>
+    </where>
+  </select>
+
+
+    <select id="listUserTestsOf" resultMap="UserTestVOResultMap">
+        select `ttp`.`id`,
+        `ttp`.`cid`,
+        `ttp`.`name`,
+        `ttp`.`start_time`,
+        `ttp`.`end_time`,
+        `ttp`.`test_duration`,
+        `ttp`.`score`,
+        `t_course`.name as `course_name`,
+        `tjt`.`create_time` as `join_time`
+        from `t_test_paper` `ttp`
+        left join `t_joined_test` `tjt` on `tjt`.`tid` = `ttp`.`id`
+        left join `t_joined_course` `tjc` on `ttp`.`cid` = `tjc`.cid
+        left join `t_course` on `t_course`.`id` = `ttp`.`cid`
+        <where>
+            `tjc`.`uid` = #{uid}
+            and `ttp`.`published` = 1
+            <if test="cid != null">
+                and `ttp`.`cid` = #{cid}
+            </if>
+            <if test="pid != null">
+                and `ttp`.`id` = #{pid}
+            </if>
+        </where>
+        order by `ttp`.`start_time`
+        limit #{pageStart},#{pageSize};
+    </select>
+    <select id="countUserTestsOf" resultType="java.lang.Integer">
+        select count(*)
+        from `t_test_paper` `ttp`
+        left join `t_joined_test` tjt on tjt.`tid` = `ttp`.`id`
+        left join `t_joined_course` `tjc` on `ttp`.`cid` = `tjc`.cid
+        left join `t_course` on `t_course`.`id` = tjt.`tid`
+        <where>
+            `tjc`.`uid` = #{uid}
+            and `ttp`.`published` = 1
+            <if test="cid != null">
+                and `ttp`.`cid` = #{cid}
+            </if>
+        </where>
+    </select>
+
+  <select id="getCanJoinedTestOrNULL" resultMap="BaseResultMap">
+    select `t_test_paper`.*
+    from `t_test_paper`
+    left join `t_joined_course` on `t_test_paper`.`cid` = `t_joined_course`.`cid`
+    where `t_joined_course`.`uid` = #{uid} and `t_test_paper`.`id` = #{tid} and `t_test_paper`.`published` = 1;
+  </select>
+    
+    <insert id="addSubmittedAnswerList" parameterType="nil.ed.onlineexam.entity.SubmittedAnswer">
+        insert into `t_submitted_answer`(`id`,
+                                         `uid`,
+                                         `pid`,
+                                         `qid`,
+                                         `answer`,
+                                         `score`,
+                                         `create_time`)
+        values
+        <foreach collection="submittedAnswerList" item="e" separator=",">
+           (NULL,
+            #{e.uid},
+            #{e.pid},
+            #{e.qid},
+            #{e.answer},
+            #{e.score},
+            unix_timestamp(current_timestamp(3))*1000)
+        </foreach>
+    </insert>
+
+    <select id="listTestPaperQuestionsWithAnswer" resultType="nil.ed.onlineexam.vo.QuestionWithAnswerVO">
+        select `t_question`.`id` as `id`,
+               `t_question`.`type` as `type`,
+               `t_question`.`content` as `content`,
+               `t_question`.`options` as `options`,
+               `t_question`.`answer` as `answer`,
+               `t_test_paper_content_item`.`score` as `score`
+        from `t_test_paper_content_item`
+        left join `t_question` on `t_test_paper_content_item`.`qid` = `t_question`.`id`
+        where `t_test_paper_content_item`.`pid` = #{pid}
+    </select>
+
+    <select id="listSubmittedAnswers" resultType="nil.ed.onlineexam.entity.SubmittedAnswer">
+        select `t`.`id` as `id`,
+               `t`.`uid` as `uid`,
+               `t`.`qid` as `qid`,
+               `t`.`pid` as `pid`,
+               `t`.`score` as `score`,
+               `t`.`create_time` as `createTime`,
+               `t`.`answer` as `answer`
+        from `t_submitted_answer` t
+        where `t`.`uid` = #{uid} and `t`.`pid` = #{pid}
+    </select>
+
+    <select id="listOwnTestPapers" resultMap="BaseResultMap">
+        select `t_test_paper`.*
+        from `t_test_paper`
+        where `t_test_paper`.`creator` = #{uid}
+        limit #{pageStart},#{pageSize}
+    </select>
+
+    <select id="countOwnTestPapers" resultType="java.lang.Integer">
+        select count(*)
+        from `t_test_paper`
+        where `t_test_paper`.`creator` = #{uid}
+    </select>
 </mapper>

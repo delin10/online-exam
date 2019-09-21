@@ -1,83 +1,41 @@
 package nil.ed.onlineexam.entity;
 
+import lombok.Data;
+
+@Data
 public class JoinedCourse {
+    /*
+    id
+     */
     private Integer id;
 
-    private String name;
+    /*
+    参加用户id
+     */
+    private Integer uid;
 
-    private Integer teacher;
+    /*
+    参加课程id
+     */
+    private Integer cid;
 
+    /*
+    获得的分数
+     */
+    private Short score;
+
+    /*
+    参加考试的时间
+     */
+    private Long joinTestTime;
+
+    /*
+    该记录的创建时间
+     */
     private Long createTime;
 
+    /*
+    该记录的更新时间
+     */
     private Long updateTime;
-
-    private Long startTime;
-
-    private Long endTime;
-
-    private Byte status;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getTeacher() {
-        return teacher;
-    }
-
-    public void setTeacher(Integer teacher) {
-        this.teacher = teacher;
-    }
-
-    public Long getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Long createTime) {
-        this.createTime = createTime;
-    }
-
-    public Long getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Long updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Long getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Long startTime) {
-        this.startTime = startTime;
-    }
-
-    public Long getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Long endTime) {
-        this.endTime = endTime;
-    }
-
-    public Byte getStatus() {
-        return status;
-    }
-
-    public void setStatus(Byte status) {
-        this.status = status;
-    }
 }

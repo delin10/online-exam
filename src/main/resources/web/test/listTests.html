@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>查看考试信息</title>
+  <link rel="stylesheet" href="/exam/layui/css/layui.css">
+</head>
+<body>
+<table id="testsOfUser" lay-filter="testsOfUser"></table>
+<script type="text/html" id="op-btn">
+  <a class="layui-btn layui-btn-xs" lay-event="{{ operationMapper(d)['opId'] }}">{{ operationMapper(d)['opTitle'] }}</a>
+</script>
+<script src="/exam/layui/layui.js" type="application/javascript"></script>
+<script src="/exam/js/index.js" type="application/javascript"></script>
+<script src="/exam/js/listTests.js" type="application/javascript"></script>
+</body>
+</html>

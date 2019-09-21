@@ -7,15 +7,15 @@
     <result column="uri" jdbcType="VARCHAR" property="uri" />
     <result column="del_mark" jdbcType="TINYINT" property="delMark" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
-    <result column="last_update_time" jdbcType="BIGINT" property="lastUpdateTime" />
+    <result column="update_time" jdbcType="BIGINT" property="updateTime" />
     <result column="creator" jdbcType="INTEGER" property="creator" />
   </resultMap>
   <insert id="insert" parameterType="nil.ed.onlineexam.entity.Permission">
     insert into t_resource (id, name, uri, 
-      del_mark, create_time, last_update_time, 
+      del_mark, create_time,update_time,
       creator)
-    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{uri,jdbcType=VARCHAR}, 
-      #{delMark,jdbcType=TINYINT}, #{createTime,jdbcType=BIGINT}, #{lastUpdateTime,jdbcType=BIGINT}, 
+    values (NULL, #{name,jdbcType=VARCHAR}, #{uri,jdbcType=VARCHAR},
+      0, unix_timestamp(current_timestamp(3))*1000, unix_timestamp(current_timestamp(3))*1000,
       #{creator,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="nil.ed.onlineexam.entity.Permission">
@@ -36,7 +36,7 @@
       <if test="createTime != null">
         create_time,
       </if>
-      <if test="lastUpdateTime != null">
+      <if test="updateTime != null">
         last_update_time,
       </if>
       <if test="creator != null">
@@ -59,8 +59,8 @@
       <if test="createTime != null">
         #{createTime,jdbcType=BIGINT},
       </if>
-      <if test="lastUpdateTime != null">
-        #{lastUpdateTime,jdbcType=BIGINT},
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=BIGINT},
       </if>
       <if test="creator != null">
         #{creator,jdbcType=INTEGER},
@@ -94,4 +94,34 @@
       `t_resource`.`id` = #{permission.id}
     </where>
   </update>
+
+  <select id="listPermissionsOfRole" resultMap="nil.ed.onlineexam.mapper.PermissionMapper.BaseResultMap">
+    select `trs`.*
+    from `t_role` tr
+    left join `t_role_resource` trr on `tr`.`id` = `trr`.`role_id`
+    left join `t_resource` trs on `trs`.`id` = `trr`.`resource_id`
+    where `tr`.`id` = #{roleId};
+  </select>
+
+  <select id="listPermissionsOfUser" resultMap="nil.ed.onlineexam.mapper.PermissionMapper.BaseResultMap">
+    select `t_resource`.*
+    from `t_user`
+    left join `t_role` on `t_user`.`role` = `t_role`.`id`
+    left join `t_role_resource` on `t_role_resource`.`role_id` = `t_role`.`id`
+    left join `t_resource` on `t_resource`.`id` = `t_role_resource`.`resource_id`
+    where `t_user`.`id` = #{userId}
+  </select>
+
+  <select id="checkIdList" resultType="java.lang.Integer">
+    select 1
+    from (
+        select count(*) as c 
+        from `t_resource` 
+        where id in 
+        <foreach collection="idLs" item="item" index="i" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        ) t
+    where t.c = ${idLs.size} ;
+  </select>
 </mapper>
